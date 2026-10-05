@@ -1,2 +1,2 @@
-def main():
-    print("caracola")
+def main() -> None:
+    print("Hola")
