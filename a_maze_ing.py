@@ -78,11 +78,10 @@ class MazeGenerator():
         """Blocks the cells that will become the 42 logo"""
         origin_x = (self.width - PATTERN_WIDTH) // 2
         origin_y = (self.height - PATTERN_HEIGHT) // 2
-        self.blocked_cells: set[tuple[int, int]] = set()
         for (x, y) in FORTY_TWO_PATTERN:
             actual_x = origin_x + x
             actual_y = origin_y + y
-            self.blocked_cells.add((actual_x, actual_y))
+            self.cells[actual_x][actual_y].blocked = True
 
     def generate_maze(self) -> None:
         self._build_base_grid()

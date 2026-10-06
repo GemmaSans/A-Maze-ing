@@ -34,3 +34,5 @@ class Cell():
         self.east = east
         self.south = south
         self.west = west
+        self.blocked = False
+        self.visited = False
