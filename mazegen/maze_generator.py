@@ -1,5 +1,5 @@
 from . import grid_building
-from .algorithm_backtrack import backtracking_algorithm
+from .algorithm_backtrack import backtracking
 
 
 PATTERN_WIDTH: int = 7
@@ -68,7 +68,7 @@ class MazeGenerator():
             grid_building._block_42_cells(self.cells, self.coords_42)
 
     def _backtracking_algorithm(self) -> None:
-        backtracking_algorithm(self.width, self.height, self.cells)
+        backtracking(self.width, self.height, self.cells)
 
     def generate_maze(self) -> None:
         """Generates the maze using a backtracking algorithm."""
