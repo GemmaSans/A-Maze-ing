@@ -1,5 +1,6 @@
 from . import grid_building
 from .algorithm_backtrack import backtracking
+from .pathfinder import bfs
 
 
 PATTERN_WIDTH: int = 7
@@ -75,3 +76,6 @@ class MazeGenerator():
         """Generates the maze using a backtracking algorithm."""
         self._build_base_grid()
         self._backtracking_algorithm()
+
+    def solve_maze(self) -> list[str]:
+        return bfs(self.cells, self.entry, self.exit)

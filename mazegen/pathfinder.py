@@ -1,5 +1,5 @@
 from .cell_structure import Cell
-import random
+from collections import deque
 
 
 def _get_visitable(x: int, y: int,
@@ -30,31 +30,45 @@ def _get_visitable(x: int, y: int,
     return abs_neighbours
 
 
-def find_valid_path(cells: list[list[Cell]],
-                    entry: tuple[int, int],
-                    exit: tuple[int, int]) -> list[tuple[int, int]]:
-    """
-    Returns a list of the coordinates of the found exit.
+def _coord_to_cardinals(solution: list[tuple[int, int]]) -> list[str]:
+    solution_list: list[str] = []
+    for i in range(0, len(solution) - 1):
+        current = solution[i]
+        next = solution[i + 1]
+        diff_x = next[0] - current[0]
+        diff_y = next[1] - current[1]
+        if diff_x == 1:
+            solution_list.append("E")
+        elif diff_x == -1:
+            solution_list.append("W")
+        elif diff_y == 1:
+            solution_list.append("S")
+        elif diff_y == -1:
+            solution_list.append("N")
+    return solution_list
 
-    Parameters:
-        cells (list(list(Cell))) = The grid of Cells from the maze.
-        entry (tuple(int, int)) = The entry point of the maze.
-        exit (tuple(int, int)) = The exit point of the maze.
-    """
-    trail: list[tuple[int, int]] = [entry]
-    deadends: list[tuple[int, int]] = []
-    while trail:
-        current = trail[-1]
+
+def bfs(cells: list[list[Cell]],
+        entry: tuple[int, int],
+        exit: tuple[int, int]) -> list[str]:
+    queue = deque([entry])
+    visited = {entry}
+    previous: dict[tuple[int, int], tuple[int, int]] = {}
+    while queue:
+        current = queue.popleft()
         visitable = _get_visitable(current[0], current[1], cells)
-        for coord in visitable:
-            if coord in deadends:
-                visitable.remove(coord)
-        if visitable:
-            next_coords = random.choice(visitable)
-            trail.append(next_coords)
-            if next_coords == exit:
-                return trail
-        else:
-            deadend = trail.pop()
-            deadends.append(deadend)
-    return trail
+        visitable = [coord for coord in visitable if coord not in visited]
+        for cell in visitable:
+            visited.add(cell)
+            previous[cell] = current
+            if cell == exit:
+                queue.clear()
+                break
+            queue.append(cell)
+    solution = [exit]
+    current = exit
+    while current != entry:
+        current = previous[current]
+        solution.append(current)
+    solution.reverse()
+    return _coord_to_cardinals(solution)
