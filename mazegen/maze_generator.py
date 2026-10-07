@@ -1,9 +1,10 @@
-from cell_structure import Cell, WallEdge
+from .cell_structure import Cell, WallEdge
 import random
 
 
 PATTERN_WIDTH: int = 7
 PATTERN_HEIGHT: int = 5
+PATTERN_ALLOWANCE: int = 2
 FORTY_TWO_PATTERN: set[tuple[int, int]] = {
     (0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4),
     (4, 0), (4, 2), (4, 3), (4, 4), (5, 0), (5, 2), (5, 4),
@@ -55,8 +56,8 @@ class MazeGenerator():
 
     def _build_base_grid(self) -> None:
         """
-        Generates all the cells and closed wall edges to have a grid for
-        the algorithm to work on.
+        Generates all the needed cells and closed wall edges to have a base
+        grid for the algorithm to work on.
         """
         horizontal_edges = [[WallEdge() for _ in range(self.height + 1)]
                             for _ in range(self.width)]
@@ -74,7 +75,7 @@ class MazeGenerator():
         self.cells = cells
 
     def _block_42_cells(self) -> None:
-        """Blocks the cells that will become the 42 logo"""
+        """Sets the cells that will become the 42 logo as 'blocked'"""
         origin_x = (self.width - PATTERN_WIDTH) // 2
         origin_y = (self.height - PATTERN_HEIGHT) // 2
         for (x, y) in FORTY_TWO_PATTERN:
@@ -84,7 +85,7 @@ class MazeGenerator():
 
     def _get_neighbours(self, x: int, y: int) -> list[tuple[int, int]]:
         """
-        Returns a list of coordinates of unvisited neighbouring
+        Returns a list of coordinates of unvisited, unblocked neighbouring
         cells of the cell in position (x, y).
 
         Parameters:
@@ -109,23 +110,35 @@ class MazeGenerator():
                 abs_neighbours.append((abs_x, abs_y))
         return abs_neighbours
 
-    def _break_walls(self, current: Cell, neighbour: Cell) -> None:
-        """Removes the wall shared by Cells current and neighbour"""
-        dif_x = neighbour.x - current.x
-        dif_y = neighbour.y - current.y
-        if dif_x == 1:
-            current.east.is_open = True
-        elif dif_x == -1:
-            current.west.is_open = True
-        elif dif_y == 1:
-            current.south.is_open = True
-        elif dif_y == -1:
-            current.north.is_open = True
+    def _break_walls(self, cell1: Cell, cell2: Cell) -> None:
+        """
+        Removes the wall shared by two cells entered as parameter.
+
+        Parameters:
+            cell1 (Cell) = First cell.
+            cell2 (Cell) = Second cell.
+        """
+        diff_x = cell2.x - cell1.x
+        diff_y = cell2.y - cell1.y
+        if diff_x == 1:
+            cell1.east.is_open = True
+        elif diff_x == -1:
+            cell1.west.is_open = True
+        elif diff_y == 1:
+            cell1.south.is_open = True
+        elif diff_y == -1:
+            cell1.north.is_open = True
         else:
-            raise ValueError(f"Cells ({current.x}, {current.y}) and "
-                             f"({neighbour.x}, {neighbour.y}) not adjacent")
+            raise ValueError(f"Cells ({cell1.x}, {cell1.y}) and "
+                             f"({cell2.x}, {cell2.y}) not adjacent")
 
     def _backtracking_algorithm(self) -> None:
+        """
+        Uses the backtracking algorithm to make the maze. Starting from
+        cell at position (0, 0) it randomly chooses an available neighbour,
+        breaks the wall between them, and keeps carving until if doesn't find
+        any, in which case it backtracks until it can find one.
+        """
         visited: list[Cell] = [self.cells[0][0]]
         self.cells[0][0].visited = True
         while visited:
@@ -133,7 +146,7 @@ class MazeGenerator():
             neighbours = self._get_neighbours(current.x, current.y)
             if neighbours:
                 selected_coords = random.choice(neighbours)
-                selected = self.cells[selected_coords[0], selected_coords[1]]
+                selected = self.cells[selected_coords[0]][selected_coords[1]]
                 self._break_walls(current, selected)
                 selected.visited = True
                 visited.append(selected)
@@ -141,7 +154,8 @@ class MazeGenerator():
                 visited.pop()
 
     def generate_maze(self) -> None:
+        """Generates the maze using a backtracking algorithm."""
         self._build_base_grid()
         if self.has_42:
             self._block_42_cells()
-        ...
+        self._backtracking_algorithm()
