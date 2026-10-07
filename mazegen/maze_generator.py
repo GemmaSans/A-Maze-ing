@@ -68,6 +68,7 @@ class MazeGenerator():
             grid_building._block_42_cells(self.cells, self.coords_42)
 
     def _backtracking_algorithm(self) -> None:
+        """Uses the backtracking algorithm to break walls between cells."""
         backtracking(self.width, self.height, self.cells)
 
     def generate_maze(self) -> None:
