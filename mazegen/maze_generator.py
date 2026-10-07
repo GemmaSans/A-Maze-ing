@@ -1,15 +1,10 @@
-from .cell_structure import Cell, WallEdge
-import random
+from . import grid_building
+from .algorithm_backtrack import backtracking_algorithm
 
 
 PATTERN_WIDTH: int = 7
 PATTERN_HEIGHT: int = 5
 PATTERN_ALLOWANCE: int = 2
-FORTY_TWO_PATTERN: set[tuple[int, int]] = {
-    (0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 3), (2, 4),
-    (4, 0), (4, 2), (4, 3), (4, 4), (5, 0), (5, 2), (5, 4),
-    (6, 0), (6, 1), (6, 2), (6, 4)
-}
 
 
 class MazeGenerator():
@@ -52,10 +47,11 @@ class MazeGenerator():
         else:
             self.has_42 = True
         if self.has_42:
-            cells_42 = self._get_42_cells()
-            if entry_pos in cells_42:
+            self.coords_42 = grid_building._get_42_cells(self.width,
+                                                         self.height)
+            if entry_pos in self.coords_42:
                 raise ValueError("Entry position in 42 pattern")
-            if exit_pos in cells_42:
+            if exit_pos in self.coords_42:
                 raise ValueError("Exit position in 42 pattern")
         if exit_pos == entry_pos:
             raise ValueError("Entry and exit on same cell")
@@ -65,108 +61,16 @@ class MazeGenerator():
 
     def _build_base_grid(self) -> None:
         """
-        Generates all the needed cells and closed wall edges to have a base
-        grid for the algorithm to work on.
+        Generates the grid and stores it, while also blocking the 42 pattern
         """
-        horizontal_edges = [[WallEdge() for _ in range(self.height + 1)]
-                            for _ in range(self.width)]
-        vertical_edges = [[WallEdge() for _ in range(self.height)]
-                          for _ in range(self.width + 1)]
-        cells = [[Cell(x, y,
-                       north=horizontal_edges[x][y],
-                       south=horizontal_edges[x][y + 1],
-                       west=vertical_edges[x][y],
-                       east=vertical_edges[x + 1][y])
-                  for y in range(self.height)]
-                 for x in range(self.width)]
-        self.horizontal_edges = horizontal_edges
-        self.vertical_edges = vertical_edges
-        self.cells = cells
-
-    def _get_42_cells(self) -> set[tuple[int, int]]:
-        """Returns the absolute coordinates for the 42 logo"""
-        origin_x = (self.width - PATTERN_WIDTH) // 2
-        origin_y = (self.height - PATTERN_HEIGHT) // 2
-        return {(origin_x + x, origin_y + y) for x, y in FORTY_TWO_PATTERN}
-
-    def _block_42_cells(self) -> None:
-        """Sets the cells that will become the 42 logo as 'blocked'"""
-        for (x, y) in self._get_42_cells():
-            self.cells[x][y].blocked = True
-
-    def _get_neighbours(self, x: int, y: int) -> list[tuple[int, int]]:
-        """
-        Returns a list of coordinates of unvisited, unblocked neighbouring
-        cells of the cell in position (x, y).
-
-        Parameters:
-            x (int) = Position of the cell in the X axis, from 0 to width -1.
-            y (int) = Position of the cell in the Y axis, from 0 to height -1.
-
-        Returns:
-            neighbours (list(tuple(int, int)): List of the coordinates for
-            available neighbours
-        """
-        abs_neighbours: list[tuple[int, int]] = []
-        rel_neighbours: list[tuple[int, int]] = [
-            (0, -1), (1, 0), (0, 1), (-1, 0)
-        ]
-        for neighbour in rel_neighbours:
-            abs_x = x + neighbour[0]
-            abs_y = y + neighbour[1]
-            if not (0 <= abs_x < self.width and 0 <= abs_y < self.height):
-                continue
-            if not any((self.cells[abs_x][abs_y].blocked,
-                        self.cells[abs_x][abs_y].visited)):
-                abs_neighbours.append((abs_x, abs_y))
-        return abs_neighbours
-
-    def _break_walls(self, cell1: Cell, cell2: Cell) -> None:
-        """
-        Removes the wall shared by two cells entered as parameter.
-
-        Parameters:
-            cell1 (Cell) = First cell.
-            cell2 (Cell) = Second cell.
-        """
-        diff_x = cell2.x - cell1.x
-        diff_y = cell2.y - cell1.y
-        if diff_x == 1:
-            cell1.east.is_open = True
-        elif diff_x == -1:
-            cell1.west.is_open = True
-        elif diff_y == 1:
-            cell1.south.is_open = True
-        elif diff_y == -1:
-            cell1.north.is_open = True
-        else:
-            raise ValueError(f"Cells ({cell1.x}, {cell1.y}) and "
-                             f"({cell2.x}, {cell2.y}) not adjacent")
+        self.cells = grid_building.build_base_grid(self.width, self.height)
+        if self.has_42:
+            grid_building._block_42_cells(self.cells, self.coords_42)
 
     def _backtracking_algorithm(self) -> None:
-        """
-        Uses the backtracking algorithm to make the maze. Starting from
-        cell at position (0, 0) it randomly chooses an available neighbour,
-        breaks the wall between them, and keeps carving until if doesn't find
-        any, in which case it backtracks until it can find one.
-        """
-        visited: list[Cell] = [self.cells[0][0]]
-        self.cells[0][0].visited = True
-        while visited:
-            current: Cell = visited[-1]
-            neighbours = self._get_neighbours(current.x, current.y)
-            if neighbours:
-                selected_coords = random.choice(neighbours)
-                selected = self.cells[selected_coords[0]][selected_coords[1]]
-                self._break_walls(current, selected)
-                selected.visited = True
-                visited.append(selected)
-            else:
-                visited.pop()
+        backtracking_algorithm(self.width, self.height, self.cells)
 
     def generate_maze(self) -> None:
         """Generates the maze using a backtracking algorithm."""
         self._build_base_grid()
-        if self.has_42:
-            self._block_42_cells()
         self._backtracking_algorithm()
