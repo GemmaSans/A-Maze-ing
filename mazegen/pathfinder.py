@@ -11,7 +11,7 @@ def _get_visitable(x: int, y: int,
     Parameters:
         x (int) = Position of the cell in the X axis, from 0 to width - 1.
         y (int) = Position of the cell in the Y axis, from 0 to height - 1.
-        cells (list(list(Cell))) = The grid of Cells from the maze
+        cells (list(list(Cell))) = The grid of Cells from the maze.
 
     Returns:
         neighbours (list(tuple(int, int)): List of the coordinates for
@@ -30,18 +30,31 @@ def _get_visitable(x: int, y: int,
     return abs_neighbours
 
 
-def find_shortest_path(cells: list[list[Cell]],
-                       entry: tuple[int, int],
-                       exit: tuple[int, int]) -> list[tuple[int, int]]:
+def find_valid_path(cells: list[list[Cell]],
+                    entry: tuple[int, int],
+                    exit: tuple[int, int]) -> list[tuple[int, int]]:
+    """
+    Returns a list of the coordinates of the found exit.
+
+    Parameters:
+        cells (list(list(Cell))) = The grid of Cells from the maze.
+        entry (tuple(int, int)) = The entry point of the maze.
+        exit (tuple(int, int)) = The exit point of the maze.
+    """
     trail: list[tuple[int, int]] = [entry]
+    deadends: list[tuple[int, int]] = []
     while trail:
         current = trail[-1]
         visitable = _get_visitable(current[0], current[1], cells)
+        for coord in visitable:
+            if coord in deadends:
+                visitable.remove(coord)
         if visitable:
             next_coords = random.choice(visitable)
             trail.append(next_coords)
             if next_coords == exit:
                 return trail
         else:
-            trail.pop()
+            deadend = trail.pop()
+            deadends.append(deadend)
     return trail
