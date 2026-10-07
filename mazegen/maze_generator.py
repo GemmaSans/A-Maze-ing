@@ -36,23 +36,32 @@ class MazeGenerator():
             raise ValueError("Width needs to be larger")
         if height < 1:
             raise ValueError("Height needs to be larger")
-        if exit_pos == entry_pos:
-            raise ValueError("Entry and exit on same cell")
+
+        self.width = width
+        self.height = height
+        self.is_perfect = is_perfect
+        self.seed = seed
+
         if not (0 <= entry_pos[0] < width and 0 <= entry_pos[1] < height):
             raise ValueError("Entry position off limits")
         if not (0 <= exit_pos[0] < width and 0 <= exit_pos[1] < height):
             raise ValueError("Exit position off limits")
-
-        self.width = width
-        self.height = height
-        self.entry = entry_pos
-        self.exit = exit_pos
-        self.is_perfect = is_perfect
-        self.seed = seed
-        if width < PATTERN_WIDTH + 2 or height < PATTERN_HEIGHT + 2:
+        if (width < PATTERN_WIDTH + PATTERN_ALLOWANCE or
+                height < PATTERN_HEIGHT + PATTERN_ALLOWANCE):
             self.has_42 = False
         else:
             self.has_42 = True
+        if self.has_42:
+            cells_42 = self._get_42_cells()
+            if entry_pos in cells_42:
+                raise ValueError("Entry position in 42 pattern")
+            if exit_pos in cells_42:
+                raise ValueError("Exit position in 42 pattern")
+        if exit_pos == entry_pos:
+            raise ValueError("Entry and exit on same cell")
+
+        self.entry = entry_pos
+        self.exit = exit_pos
 
     def _build_base_grid(self) -> None:
         """
@@ -74,14 +83,16 @@ class MazeGenerator():
         self.vertical_edges = vertical_edges
         self.cells = cells
 
-    def _block_42_cells(self) -> None:
-        """Sets the cells that will become the 42 logo as 'blocked'"""
+    def _get_42_cells(self) -> set[tuple[int, int]]:
+        """Returns the absolute coordinates for the 42 logo"""
         origin_x = (self.width - PATTERN_WIDTH) // 2
         origin_y = (self.height - PATTERN_HEIGHT) // 2
-        for (x, y) in FORTY_TWO_PATTERN:
-            actual_x = origin_x + x
-            actual_y = origin_y + y
-            self.cells[actual_x][actual_y].blocked = True
+        return {(origin_x + x, origin_y + y) for x, y in FORTY_TWO_PATTERN}
+
+    def _block_42_cells(self) -> None:
+        """Sets the cells that will become the 42 logo as 'blocked'"""
+        for (x, y) in self._get_42_cells():
+            self.cells[x][y].blocked = True
 
     def _get_neighbours(self, x: int, y: int) -> list[tuple[int, int]]:
         """
