@@ -1,6 +1,7 @@
 from . import grid_building
 from .algorithm_backtrack import backtracking
 from .pathfinder import bfs
+import random
 
 
 PATTERN_WIDTH: int = 7
@@ -74,6 +75,7 @@ class MazeGenerator():
 
     def generate_maze(self) -> None:
         """Generates the maze using a backtracking algorithm."""
+        random.seed(self.seed)
         self._build_base_grid()
         self._backtracking_algorithm()
 
