@@ -30,8 +30,8 @@ def _get_neighbours(x: int, y: int,
         abs_y = y + neighbour[1]
         if not (0 <= abs_x < width and 0 <= abs_y < height):
             continue
-        if not any((cells[abs_x][abs_y].blocked,
-                    cells[abs_x][abs_y].visited)):
+        if not any((cells[abs_y][abs_x].blocked,
+                    cells[abs_y][abs_x].visited)):
             abs_neighbours.append((abs_x, abs_y))
     return abs_neighbours
 
@@ -51,7 +51,7 @@ def backtracking(width: int, height: int, cells: list[list[Cell]]) -> None:
                                      width, height, cells)
         if neighbours:
             selected_coords = random.choice(neighbours)
-            selected = cells[selected_coords[0]][selected_coords[1]]
+            selected = cells[selected_coords[1]][selected_coords[0]]
             remove_walls(current, selected)
             selected.visited = True
             visited.append(selected)

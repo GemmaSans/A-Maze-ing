@@ -22,17 +22,17 @@ def build_base_grid(width: int, height: int) -> list[list[Cell]]:
     Returns:
         cells (list(list(Cell))) = A grid of width x height cells
     """
-    horizontal_edges = [[WallEdge() for _ in range(height + 1)]
-                        for _ in range(width)]
-    vertical_edges = [[WallEdge() for _ in range(height)]
-                      for _ in range(width + 1)]
+    horizontal_edges = [[WallEdge() for _ in range(width)]
+                        for _ in range(height + 1)]
+    vertical_edges = [[WallEdge() for _ in range(width + 1)]
+                      for _ in range(height)]
     cells = [[Cell(x, y,
-                   north=horizontal_edges[x][y],
-                   south=horizontal_edges[x][y + 1],
-                   west=vertical_edges[x][y],
-                   east=vertical_edges[x + 1][y])
-              for y in range(height)]
-             for x in range(width)]
+                   north=horizontal_edges[y][x],
+                   south=horizontal_edges[y + 1][x],
+                   west=vertical_edges[y][x],
+                   east=vertical_edges[y][x + 1])
+              for x in range(width)]
+             for y in range(height)]
     return cells
 
 
@@ -62,4 +62,4 @@ def _block_42_cells(cells: list[list[Cell]],
             42 logo
     """
     for (x, y) in coords_42:
-        cells[x][y].blocked = True
+        cells[y][x].blocked = True

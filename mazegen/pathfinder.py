@@ -18,7 +18,7 @@ def _get_visitable(x: int, y: int,
         available neighbours
     """
     abs_neighbours: list[tuple[int, int]] = []
-    current = cells[x][y]
+    current = cells[y][x]
     if current.north.is_open:
         abs_neighbours.append((x, y - 1))
     if current.east.is_open:
@@ -51,24 +51,23 @@ def _coord_to_cardinals(solution: list[tuple[int, int]]) -> list[str]:
 def bfs(cells: list[list[Cell]],
         entry: tuple[int, int],
         exit: tuple[int, int]) -> list[str]:
-    queue = deque([entry])
-    visited = {entry}
-    previous: dict[tuple[int, int], tuple[int, int]] = {}
+    queue = deque([exit])
+    visited = {exit}
+    next: dict[tuple[int, int], tuple[int, int]] = {}
     while queue:
         current = queue.popleft()
         visitable = _get_visitable(current[0], current[1], cells)
         visitable = [coord for coord in visitable if coord not in visited]
         for cell in visitable:
             visited.add(cell)
-            previous[cell] = current
-            if cell == exit:
+            next[cell] = current
+            if cell == entry:
                 queue.clear()
                 break
             queue.append(cell)
-    solution = [exit]
-    current = exit
-    while current != entry:
-        current = previous[current]
+    solution = [entry]
+    current = entry
+    while current != exit:
+        current = next[current]
         solution.append(current)
-    solution.reverse()
     return _coord_to_cardinals(solution)
