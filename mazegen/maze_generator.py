@@ -47,7 +47,7 @@ class MazeGenerator():
             raise ValueError("Entry position off limits")
         if not (0 <= exit_pos[0] < width and 0 <= exit_pos[1] < height):
             raise ValueError("Exit position off limits")
-        if (width >= PATTERN_MIN_WIDTH or height >= PATTERN_MIN_HEIGHT):
+        if width >= PATTERN_MIN_WIDTH and height >= PATTERN_MIN_HEIGHT:
             self.coords_42 = get_42_coords(self.width, self.height)
             if entry_pos in self.coords_42:
                 raise ValueError("Entry position in 42 pattern")
