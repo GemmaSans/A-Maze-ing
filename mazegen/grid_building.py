@@ -36,7 +36,7 @@ def build_base_grid(width: int, height: int) -> list[list[Cell]]:
     return grid
 
 
-def _get_42_coords(width: int, height: int) -> set[tuple[int, int]]:
+def get_42_coords(width: int, height: int) -> set[tuple[int, int]]:
     """
     Obtain the absolute coordinates for the 42 logo.
 
@@ -51,15 +51,15 @@ def _get_42_coords(width: int, height: int) -> set[tuple[int, int]]:
     return {(origin_x + x, origin_y + y) for x, y in FORTY_TWO_PATTERN}
 
 
-def _block_42_cells(grid: list[list[Cell]],
-                    coords_42: set[tuple[int, int]]) -> None:
+def block_42_cells(grid: list[list[Cell]],
+                   coords_42: set[tuple[int, int]]) -> None:
     """
     Sets the cells that will become the 42 logo as 'blocked'
 
     Parameters:
         grid (list(list(Cell))) = The grid of the maze
-        coords_42 (set(tuple(int, int))) = The coordinates for the
+        coords_42 (list(tuple(int, int))) = The coordinates for the
             42 logo
     """
-    for (x, y) in coords_42:
+    for x, y in coords_42:
         grid[y][x].blocked = True

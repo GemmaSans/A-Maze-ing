@@ -1,12 +1,11 @@
-from . import grid_building
+from .grid_building import get_42_coords, build_base_grid, block_42_cells
 from .algorithm_backtrack import backtracking
 from .pathfinder import bfs
 import random
 
 
-PATTERN_WIDTH: int = 7
-PATTERN_HEIGHT: int = 5
-PATTERN_ALLOWANCE: int = 2
+PATTERN_MIN_WIDTH: int = 9
+PATTERN_MIN_HEIGHT: int = 7
 
 
 class MazeGenerator():
@@ -38,19 +37,14 @@ class MazeGenerator():
         self.height = height
         self.is_perfect = is_perfect
         self.seed = seed
+        self.coords_42: set[tuple[int, int]] = set()
 
         if not (0 <= entry_pos[0] < width and 0 <= entry_pos[1] < height):
             raise ValueError("Entry position off limits")
         if not (0 <= exit_pos[0] < width and 0 <= exit_pos[1] < height):
             raise ValueError("Exit position off limits")
-        if (width < PATTERN_WIDTH + PATTERN_ALLOWANCE or
-                height < PATTERN_HEIGHT + PATTERN_ALLOWANCE):
-            self.has_42 = False
-        else:
-            self.has_42 = True
-        if self.has_42:
-            self.coords_42 = grid_building._get_42_coords(self.width,
-                                                          self.height)
+        if (width >= PATTERN_MIN_WIDTH or height >= PATTERN_MIN_HEIGHT):
+            self.coords_42 = get_42_coords(self.width, self.height)
             if entry_pos in self.coords_42:
                 raise ValueError("Entry position in 42 pattern")
             if exit_pos in self.coords_42:
@@ -65,9 +59,9 @@ class MazeGenerator():
         """
         Generates the grid and stores it, while also blocking the 42 pattern
         """
-        self.grid = grid_building.build_base_grid(self.width, self.height)
-        if self.has_42:
-            grid_building._block_42_cells(self.grid, self.coords_42)
+        self.grid = build_base_grid(self.width, self.height)
+        if len(self.coords_42):
+            block_42_cells(self.grid, self.coords_42)
 
     def _backtracking_algorithm(self) -> None:
         """Uses the backtracking algorithm to break walls between cells."""
