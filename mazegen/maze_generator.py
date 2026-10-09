@@ -1,6 +1,7 @@
 from .grid_building import get_42_coords, build_base_grid, block_42_cells
 from .algorithm_backtrack import backtracking
 from .pathfinder import bfs
+from .not_perfect import convert_to_imperfect
 import random
 
 
@@ -78,6 +79,8 @@ class MazeGenerator():
         random.seed(self.seed)
         self._build_base_grid()
         self._backtracking_algorithm()
+        if not self.is_perfect:
+            convert_to_imperfect(self.grid)
 
     def solve_maze(self) -> list[str]:
         return bfs(self.grid, self.entry, self.exit)

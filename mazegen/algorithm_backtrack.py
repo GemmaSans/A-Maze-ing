@@ -3,8 +3,7 @@ from .cell_structure import Cell
 import random
 
 
-def _get_neighbours(x: int, y: int,
-                    grid: list[list[Cell]]) -> list[Cell]:
+def _get_neighbours(cell: Cell, grid: list[list[Cell]]) -> list[Cell]:
     """
     Returns a list of coordinates of unvisited, unblocked neighbouring
     cells of the cell in position (x, y).
@@ -24,8 +23,8 @@ def _get_neighbours(x: int, y: int,
             (0, -1), (1, 0), (0, 1), (-1, 0)
     ]
     for neighbour in rel_neighbours:
-        abs_x = x + neighbour[0]
-        abs_y = y + neighbour[1]
+        abs_x = cell.x + neighbour[0]
+        abs_y = cell.y + neighbour[1]
         if not (0 <= abs_x < width and 0 <= abs_y < height):
             continue
         if not any((grid[abs_y][abs_x].blocked,
@@ -45,7 +44,7 @@ def backtracking(grid: list[list[Cell]]) -> None:
     grid[0][0].visited = True
     while visited:
         current: Cell = visited[-1]
-        neighbours = _get_neighbours(current.x, current.y, grid)
+        neighbours = _get_neighbours(current, grid)
         if neighbours:
             selected = random.choice(neighbours)
             remove_walls(current, selected)
