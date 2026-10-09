@@ -20,23 +20,23 @@ def build_base_grid(width: int, height: int) -> list[list[Cell]]:
         height (int) = Total height of the maze.
 
     Returns:
-        cells (list(list(Cell))) = A grid of width x height cells
+        grid (list(list(Cell))) = A grid of width x height cells
     """
     horizontal_edges = [[WallEdge() for _ in range(width)]
                         for _ in range(height + 1)]
     vertical_edges = [[WallEdge() for _ in range(width + 1)]
                       for _ in range(height)]
-    cells = [[Cell(x, y,
-                   north=horizontal_edges[y][x],
-                   south=horizontal_edges[y + 1][x],
-                   west=vertical_edges[y][x],
-                   east=vertical_edges[y][x + 1])
-              for x in range(width)]
-             for y in range(height)]
-    return cells
+    grid = [[Cell(x, y,
+                  north=horizontal_edges[y][x],
+                  south=horizontal_edges[y + 1][x],
+                  west=vertical_edges[y][x],
+                  east=vertical_edges[y][x + 1])
+             for x in range(width)]
+            for y in range(height)]
+    return grid
 
 
-def _get_42_cells(width: int, height: int) -> set[tuple[int, int]]:
+def _get_42_coords(width: int, height: int) -> set[tuple[int, int]]:
     """
     Obtain the absolute coordinates for the 42 logo.
 
@@ -51,15 +51,15 @@ def _get_42_cells(width: int, height: int) -> set[tuple[int, int]]:
     return {(origin_x + x, origin_y + y) for x, y in FORTY_TWO_PATTERN}
 
 
-def _block_42_cells(cells: list[list[Cell]],
+def _block_42_cells(grid: list[list[Cell]],
                     coords_42: set[tuple[int, int]]) -> None:
     """
     Sets the cells that will become the 42 logo as 'blocked'
 
     Parameters:
-        cells (list(list(Cell))) = The grid of the maze
+        grid (list(list(Cell))) = The grid of the maze
         coords_42 (set(tuple(int, int))) = The coordinates for the
             42 logo
     """
     for (x, y) in coords_42:
-        cells[y][x].blocked = True
+        grid[y][x].blocked = True

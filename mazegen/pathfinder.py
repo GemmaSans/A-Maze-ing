@@ -3,7 +3,7 @@ from collections import deque
 
 
 def _get_visitable(x: int, y: int,
-                   cells: list[list[Cell]]) -> list[tuple[int, int]]:
+                   grid: list[list[Cell]]) -> list[tuple[int, int]]:
     """
     Returns a list of coordinates of visitable neighbouring
     cells of the cell in position (x, y).
@@ -11,14 +11,14 @@ def _get_visitable(x: int, y: int,
     Parameters:
         x (int) = Position of the cell in the X axis, from 0 to width - 1.
         y (int) = Position of the cell in the Y axis, from 0 to height - 1.
-        cells (list(list(Cell))) = The grid of Cells from the maze.
+        grid (list(list(Cell))) = The grid of Cells from the maze.
 
     Returns:
         neighbours (list(tuple(int, int)): List of the coordinates for
         available neighbours
     """
     abs_neighbours: list[tuple[int, int]] = []
-    current = cells[y][x]
+    current = grid[y][x]
     if current.north.is_open:
         abs_neighbours.append((x, y - 1))
     if current.east.is_open:
@@ -48,7 +48,7 @@ def _coord_to_cardinals(solution: list[tuple[int, int]]) -> list[str]:
     return solution_list
 
 
-def bfs(cells: list[list[Cell]],
+def bfs(grid: list[list[Cell]],
         entry: tuple[int, int],
         exit: tuple[int, int]) -> list[str]:
     queue = deque([exit])
@@ -56,7 +56,7 @@ def bfs(cells: list[list[Cell]],
     next: dict[tuple[int, int], tuple[int, int]] = {}
     while queue:
         current = queue.popleft()
-        visitable = _get_visitable(current[0], current[1], cells)
+        visitable = _get_visitable(current[0], current[1], grid)
         visitable = [coord for coord in visitable if coord not in visited]
         for cell in visitable:
             visited.add(cell)

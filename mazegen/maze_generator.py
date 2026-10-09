@@ -49,8 +49,8 @@ class MazeGenerator():
         else:
             self.has_42 = True
         if self.has_42:
-            self.coords_42 = grid_building._get_42_cells(self.width,
-                                                         self.height)
+            self.coords_42 = grid_building._get_42_coords(self.width,
+                                                          self.height)
             if entry_pos in self.coords_42:
                 raise ValueError("Entry position in 42 pattern")
             if exit_pos in self.coords_42:
@@ -65,13 +65,13 @@ class MazeGenerator():
         """
         Generates the grid and stores it, while also blocking the 42 pattern
         """
-        self.cells = grid_building.build_base_grid(self.width, self.height)
+        self.grid = grid_building.build_base_grid(self.width, self.height)
         if self.has_42:
-            grid_building._block_42_cells(self.cells, self.coords_42)
+            grid_building._block_42_cells(self.grid, self.coords_42)
 
     def _backtracking_algorithm(self) -> None:
         """Uses the backtracking algorithm to break walls between cells."""
-        backtracking(self.width, self.height, self.cells)
+        backtracking(self.grid)
 
     def generate_maze(self) -> None:
         """Generates the maze using a backtracking algorithm."""
@@ -80,4 +80,4 @@ class MazeGenerator():
         self._backtracking_algorithm()
 
     def solve_maze(self) -> list[str]:
-        return bfs(self.cells, self.entry, self.exit)
+        return bfs(self.grid, self.entry, self.exit)
