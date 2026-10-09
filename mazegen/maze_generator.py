@@ -15,8 +15,8 @@ class MazeGenerator():
                  height: int,
                  entry_pos: tuple[int, int],
                  exit_pos: tuple[int, int],
-                 is_perfect: bool,
-                 seed: int) -> None:
+                 is_perfect: bool | None = True,
+                 seed: int | None = None) -> None:
         """
         Initialization of the MazeGenerator class.
 
@@ -25,8 +25,10 @@ class MazeGenerator():
             height (int): height of the maze
             entry_pos (tuple(int, int)): position of the entry of the maze
             exit_pos (tuple(int, int)): position of the exit of the maze
-            is_perfect (bool): True if the maze is perfect, False otherwise
-            seed (int): seed for reproducibility
+            is_perfect (bool): True if the maze is perfect, False otherwise.
+                Default is True.
+            seed (int): seed for reproducibility. If none is provided, a
+                random one is generated
         """
         if width < 1:
             raise ValueError("Width needs to be larger")
@@ -36,6 +38,8 @@ class MazeGenerator():
         self.width = width
         self.height = height
         self.is_perfect = is_perfect
+        if seed is None:
+            seed = random.randrange(2**32)
         self.seed = seed
         self.coords_42: set[tuple[int, int]] = set()
 
@@ -67,8 +71,10 @@ class MazeGenerator():
         """Uses the backtracking algorithm to break walls between cells."""
         backtracking(self.grid)
 
-    def generate_maze(self) -> None:
+    def generate_maze(self, seed: int | None = None) -> None:
         """Generates the maze using a backtracking algorithm."""
+        if seed:
+            self.seed = seed
         random.seed(self.seed)
         self._build_base_grid()
         self._backtracking_algorithm()
