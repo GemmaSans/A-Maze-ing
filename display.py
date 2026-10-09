@@ -28,7 +28,7 @@ class MazeDisplay:
         self.generator = generator
         self.path = path
         self.show_path: bool = isinstance(self.path, str)
-        self.width_canva: int = self.generator.width * 2 + 1
+        self.width_canva: int = self.generator.width * 4 + 1
         self.height_canva: int = self.generator.height * 2 + 1
         self.str_maze: list[list[str]] = []
 
@@ -44,78 +44,121 @@ class MazeDisplay:
                 str_row.append(" ")
             self.str_maze.append(str_row)
 
-    def start_exit(self) -> None:
-        pass
-
     def str_generate(self) -> None:
         """
-        Translates the integer grid into a character canvas with walls.
+        Translates the grid of Cell objects into a character canvas with walls.
 
-        Iterates over the integer matrix (using coordinates
-        y, x = row, column inside the matrix), evaluates active bit flags
-        (N, E, S, W) for each cell, and draws the corresponding wall 
-        characters into the canvas.
-
-        Parameters:
-            int_maze (list[list[int]]): The 2D grid of bitwise wall values.
+        Iterates over the generator's 2D cell structure, evaluates the 
+        state of the shared WallEdges (north, south, east, west) for each 
+        cell, and draws the corresponding wall characters into the canvas.
         """
         for y in range(self.generator.height):
             for x in range(self.generator.width):
                 cell = self.generator.cells[y][x]
+                if x - 1 <= 0:
+                    prev_cell = self.generator.cells[y][x - 1]
+                if y - 1 <= 0:
+                    above_cell = self.generator.cells[y - 1][x]
                 if x + 1 < self.generator.width:
                     next_cell = self.generator.cells[y][x + 1]
                 if y + 1 < self.generator.height:
                     below_cell = self.generator.cells[y + 1][x]
 
-                # cy = y * 2 + 1
                 ny = y * 2
+                cy = y * 2 + 1
                 sy = y * 2 + 2
-                ey = y * 2 + 1
-                wy = y * 2 + 1
 
-                # cx = x * 2 + 1
-                nx = x * 2 + 1
-                sx = x * 2 + 1
-                ex = x * 2 + 2
-                wx = x * 2
+                wx = x * 4
+                c1x = x * 4 + 1
+                c2x = x * 4 + 2
+                c3x = x * 4 + 3
+                ex = x * 4 + 4
 
                 if not cell.north.is_open:
-                    self.str_maze[ny][nx] = "█"
+                    self.str_maze[ny][c1x] = "█"
+                    self.str_maze[ny][c2x] = "█"
+                    self.str_maze[ny][c3x] = "█"
+                    if prev_cell and not prev_cell.north.is_open:
+                        self.str_maze[ny][wx] = "█"
                     if next_cell and not next_cell.north.is_open:
                         self.str_maze[ny][ex] = "█"
+
                 if not cell.south.is_open:
-                    self.str_maze[sy][sx] = "█"
+                    self.str_maze[sy][c1x] = "█"
+                    self.str_maze[sy][c2x] = "█"
+                    self.str_maze[sy][c3x] = "█"
+                    if prev_cell and not prev_cell.south.is_open:
+                        self.str_maze[sy][wx] = "█"
                     if next_cell and not next_cell.south.is_open:
                         self.str_maze[sy][ex] = "█"
+
                 if not cell.east.is_open:
-                    self.str_maze[ey][ex] = "█"
+                    self.str_maze[cy][ex] = "█"
                     if not cell.north.is_open:
                         self.str_maze[ny][ex] = "█"
                     if not cell.south.is_open:
                         self.str_maze[sy][ex] = "█"
+                    if above_cell and not above_cell.east.is_open:
+                        self.str_maze[ny][ex] = "█"
                     if below_cell and not below_cell.east.is_open:
                         self.str_maze[sy][ex] = "█"
+
                 if not cell.west.is_open:
-                    self.str_maze[wy][wx] = "█"
+                    self.str_maze[cy][wx] = "█"
                     if not cell.north.is_open:
                         self.str_maze[ny][wx] = "█"
                     if not cell.south.is_open:
                         self.str_maze[sy][wx] = "█"
+                    if above_cell and not above_cell.west.is_open:
+                        self.str_maze[ny][wx] = "█"
                     if below_cell and not below_cell.west.is_open:
                         self.str_maze[sy][wx] = "█"
+
+    def include_entry(self) -> None:
+        y, x = self.generator.entry
+
+        start_y = y * 2
+        start_x = x * 4
+
+        for str_y in range(3):
+            for str_x in range(5):
+                self.str_maze[start_y + str_y][start_x + str_x] = "▒"
+
+        # for str_y in range(3):
+        #     self.str_maze[str_y][str_x] = "█"
+        #     str_x += 1
+        #     self.str_maze[str_y][str_x] = "|"
+        #     str_x += 1
+        #     for str_x in range(3):
+        #         self.str_maze[str_y][str_x] = "—"
+
+    def include_exit(self) -> None:
+        y, x = self.generator.exit
+
+        start_y = y * 2
+        start_x = x * 4
+
+        for str_y in range(3):
+            for str_x in range(5):
+                self.str_maze[start_y + str_y][start_x + str_x] = "▒"
+
+    def show_maze(self) -> None:
+        self.canva_init()
+        self.str_generate()
+        self.include_entry()
+        self.include_exit()
+        for row in self.str_maze:
+            for cell in row:
+                print(cell, end="")
+            print()
 
 
 def main() -> None:
     try:
-        maze_structure = MazeGenerator(20, 15, (1, 1), (19, 14), False, 0)
+        maze_structure = MazeGenerator(20, 20, (0, 0), (19, 19), False, 0)
         maze_structure.generate_maze()
         maze_to_print = MazeDisplay(maze_structure)
-        maze_to_print.canva_init()
-        maze_to_print.str_generate()
-        for row in maze_to_print.str_maze:
-            for cell in row:
-                print(cell, end="")
-            print()
+        maze_to_print.show_maze()
 
     except ValueError as e:
         print(e)
