@@ -9,12 +9,12 @@ def _get_visitable(x: int, y: int,
     cells of the cell in position (x, y).
 
     Parameters:
-        x (int) = Position of the cell in the X axis, from 0 to width - 1.
-        y (int) = Position of the cell in the Y axis, from 0 to height - 1.
-        grid (list(list(Cell))) = The grid of Cells from the maze.
+        x (int): Position of the cell in the X axis, from 0 to width - 1.
+        y (int): Position of the cell in the Y axis, from 0 to height - 1.
+        grid (list(list(Cell))): The grid of Cells from the maze.
 
     Returns:
-        neighbours (list(tuple(int, int)): List of the coordinates for
+        list(tuple(int, int): List of the coordinates for
         available neighbours
     """
     abs_neighbours: list[tuple[int, int]] = []
@@ -31,6 +31,15 @@ def _get_visitable(x: int, y: int,
 
 
 def _coord_to_cardinals(solution: list[tuple[int, int]]) -> list[str]:
+    """
+    Converts a list of coordinates to a list of cardinal directions.
+
+    Parameters:
+        solution (list[tuple[int, int]]): A list of coordinates
+
+    Returns:
+        list[str]: A list of the solution in cardinal directions.
+    """
     solution_list: list[str] = []
     for i in range(0, len(solution) - 1):
         current = solution[i]
@@ -51,6 +60,18 @@ def _coord_to_cardinals(solution: list[tuple[int, int]]) -> list[str]:
 def bfs(grid: list[list[Cell]],
         entry: tuple[int, int],
         exit: tuple[int, int]) -> list[str]:
+    """
+    Uses Breadth-First Search (BFS) to obtain the shortest path
+    from a point to the other.
+
+    Parameters:
+        grid (list(list(Cell))): The grid of Cells that comprises the maze
+        entry (tuple[int, int]): The entry point of the maze.
+        exit (tuple[int, int]): The exit point of the maze.
+
+    Returns:
+        list(str): A list of the shortest path in cardinal directions.
+    """
     queue = deque([exit])
     visited = {exit}
     next: dict[tuple[int, int], tuple[int, int]] = {}

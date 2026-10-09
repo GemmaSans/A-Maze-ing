@@ -6,15 +6,14 @@ import random
 def _get_neighbours(cell: Cell, grid: list[list[Cell]]) -> list[Cell]:
     """
     Returns a list of coordinates of unvisited, unblocked neighbouring
-    cells of the cell in position (x, y).
+    cells of the cell in question.
 
     Parameters:
-        x (int) = Position of the cell in the X axis, from 0 to width - 1.
-        y (int) = Position of the cell in the Y axis, from 0 to height - 1.
-        grid (list(list(Cell))) = The grid of Cells from the maze
+        cell (Cell): The origin cell.
+        grid (list(list(Cell))): The grid of Cells that comprises the maze
 
     Returns:
-        neighbours (list(Cell): List of available, neighbouring cells
+        list(Cell)): List of available, neighbouring cells
     """
     width = len(grid[0])
     height = len(grid)
@@ -39,6 +38,9 @@ def backtracking(grid: list[list[Cell]]) -> None:
     cell at position (0, 0) it randomly chooses an available neighbour,
     breaks the wall between them, and keeps carving until if doesn't find
     any, in which case it backtracks until it can find one.
+
+    Parameters:
+        grid (list(list(Cell))): The grid of Cells that comprises the maze
     """
     visited: list[Cell] = [grid[0][0]]
     grid[0][0].visited = True

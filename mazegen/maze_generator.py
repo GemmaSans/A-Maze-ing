@@ -83,4 +83,5 @@ class MazeGenerator():
             convert_to_imperfect(self.grid)
 
     def solve_maze(self) -> list[str]:
+        """Returns the shortest path to the exit using BFS"""
         return bfs(self.grid, self.entry, self.exit)
