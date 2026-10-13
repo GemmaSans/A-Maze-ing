@@ -117,30 +117,24 @@ class MazeDisplay:
     def include_entry(self) -> None:
         y, x = self.generator.entry
 
-        start_y = y * 2
-        start_x = x * 4
+        str_y = y * 2 + 1
+        str_x = x * 4
 
-        for str_y in range(3):
-            for str_x in range(5):
-                self.str_maze[start_y + str_y][start_x + str_x] = "▒"
-
-        # for str_y in range(3):
-        #     self.str_maze[str_y][str_x] = "█"
-        #     str_x += 1
-        #     self.str_maze[str_y][str_x] = "|"
-        #     str_x += 1
-        #     for str_x in range(3):
-        #         self.str_maze[str_y][str_x] = "—"
+        self.str_maze[str_y][str_x] = "▒"
+        self.str_maze[str_y][str_x + 1] = "▅"
+        self.str_maze[str_y][str_x + 2] = "▃"
+        self.str_maze[str_y][str_x + 3] = "▁"
 
     def include_exit(self) -> None:
         y, x = self.generator.exit
 
-        start_y = y * 2
-        start_x = x * 4
+        str_y = y * 2 + 1
+        str_x = x * 4
 
-        for str_y in range(3):
-            for str_x in range(5):
-                self.str_maze[start_y + str_y][start_x + str_x] = "▒"
+        self.str_maze[str_y][str_x] = "▁"
+        self.str_maze[str_y][str_x + 1] = "▃"
+        self.str_maze[str_y][str_x + 2] = "▅"
+        self.str_maze[str_y][str_x + 3] = "▒"
 
     def show_maze(self) -> None:
         self.canva_init()
@@ -155,7 +149,7 @@ class MazeDisplay:
 
 def main() -> None:
     try:
-        maze_structure = MazeGenerator(20, 20, (0, 0), (19, 19), False, 0)
+        maze_structure = MazeGenerator(20, 20, (5, 7), (1, 12), False, 0)
         maze_structure.generate_maze()
         maze_to_print = MazeDisplay(maze_structure)
         maze_to_print.show_maze()
