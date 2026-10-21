@@ -51,7 +51,8 @@ class MazeDisplay:
         width_canva) filled with space characters (' ') and stores it in
         self.str_maze.
         """
-        self.str_maze: list[list[str]] = []
+        self.str_maze = []
+
         for y in range(self.height_canva):
             str_row: list[str] = []
             for x in range(self.width_canva):
@@ -101,10 +102,10 @@ class MazeDisplay:
                         self.str_maze[ny][wx] = "█"
                     if next_cell and not next_cell.north.is_open:
                         self.str_maze[ny][ex] = "█"
-                    # if above_cell and not above_cell.west.is_open:
-                    #     self.str_maze[ny][wx] = "█"
-                    # if above_cell and not above_cell.east.is_open:
-                    #     self.str_maze[ny][ex] = "█"
+                    if above_cell and not above_cell.west.is_open:
+                        self.str_maze[ny][wx] = "█"
+                    if above_cell and not above_cell.east.is_open:
+                        self.str_maze[ny][ex] = "█"
 
                 if not cell.south.is_open:
                     self.str_maze[sy][c1x] = "█"
@@ -114,10 +115,10 @@ class MazeDisplay:
                         self.str_maze[sy][wx] = "█"
                     if next_cell and not next_cell.south.is_open:
                         self.str_maze[sy][ex] = "█"
-                    # if below_cell and not below_cell.west.is_open:
-                    #     self.str_maze[sy][wx] = "█"
-                    # if below_cell and not below_cell.east.is_open:
-                    #     self.str_maze[sy][ex] = "█"
+                    if below_cell and not below_cell.west.is_open:
+                        self.str_maze[sy][wx] = "█"
+                    if below_cell and not below_cell.east.is_open:
+                        self.str_maze[sy][ex] = "█"
 
                 if not cell.east.is_open:
                     self.str_maze[cy][ex] = "█"
@@ -305,18 +306,18 @@ class MazeDisplay:
                     painted_char: str = f"{colour_wall}{char}{reset_colour}"
                     painted_row.append(painted_char)
                 elif char == "▓":
-                    painted_char: str = f"{colour_42}{char}{reset_colour}"
+                    painted_char = f"{colour_42}{char}{reset_colour}"
                     painted_row.append(painted_char)
                 elif char == "E" or char == "X":
-                    painted_char: str = f"{colour_ex}{char}{reset_colour}"
+                    painted_char = f"{colour_ex}{char}{reset_colour}"
                     painted_row.append(painted_char)
                 else:
-                    painted_char: str = f"{colour_path}{char}{reset_colour}"
+                    painted_char = f"{colour_path}{char}{reset_colour}"
                     painted_row.append(painted_char)
             painted_maze.append(painted_row)
         return painted_maze
 
-    def __str__(self) -> None:
+    def __str__(self) -> str:
         """
         Returns a formatted string representation of the fully painted
         maze ready for terminal printing.
