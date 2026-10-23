@@ -1,5 +1,7 @@
 from mazegen import MazeGenerator
 import random
+import os
+import subprocess
 
 
 class MazeDisplay:
@@ -37,7 +39,7 @@ class MazeDisplay:
         self.str_maze: list[list[str]] = []
         self.colours: dict[str, str] = {"red": "\033[31m",
                                         "green": "\033[32m",
-                                        "yellow": "\033[33m",
+                                        "yellow": "\033[38;2;255;230;0m",
                                         "blue": "\033[34m",
                                         "magenta": "\033[35m",
                                         "cyan": "\033[36m",
@@ -77,10 +79,10 @@ class MazeDisplay:
                 below_cell = None
                 if x - 1 >= 0:
                     prev_cell = self.generator.grid[y][x - 1]
-                if y - 1 >= 0:
-                    above_cell = self.generator.grid[y - 1][x]
                 if x + 1 < self.generator.width:
                     next_cell = self.generator.grid[y][x + 1]
+                if y - 1 >= 0:
+                    above_cell = self.generator.grid[y - 1][x]
                 if y + 1 < self.generator.height:
                     below_cell = self.generator.grid[y + 1][x]
 
@@ -150,15 +152,65 @@ class MazeDisplay:
         for y in range(self.generator.height):
             for x in range(self.generator.width):
                 cell = self.generator.grid[y][x]
+                prev_cell = None
+                above_cell = None
+                next_cell = None
+                below_cell = None
+                if x - 1 >= 0:
+                    prev_cell = self.generator.grid[y][x - 1]
+                if x + 1 < self.generator.width:
+                    next_cell = self.generator.grid[y][x + 1]
+                if y - 1 >= 0:
+                    above_cell = self.generator.grid[y - 1][x]
+                if y + 1 < self.generator.height:
+                    below_cell = self.generator.grid[y + 1][x]
+
+                ny = y * 2
                 cy = y * 2 + 1
+                sy = y * 2 + 2
+
+                wx = x * 4
                 c1x = x * 4 + 1
                 c2x = x * 4 + 2
                 c3x = x * 4 + 3
+                ex = x * 4 + 4
 
                 if cell.blocked:
-                    self.str_maze[cy][c1x] = "▓"
-                    self.str_maze[cy][c2x] = "▓"
-                    self.str_maze[cy][c3x] = "▓"
+                    self.str_maze[cy][c1x] = "▒"
+                    self.str_maze[cy][c2x] = "▒"
+                    self.str_maze[cy][c3x] = "▒"
+                    if prev_cell and prev_cell.blocked:
+                        self.str_maze[cy][wx] = "▒"
+                    else:
+                        self.str_maze[ny][wx] = "▓"
+                        self.str_maze[cy][wx] = "▓"
+                        self.str_maze[sy][wx] = "▓"
+                    if next_cell and next_cell.blocked:
+                        self.str_maze[cy][ex] = "▒"
+                    else:
+                        self.str_maze[ny][ex] = "▓"
+                        self.str_maze[cy][ex] = "▓"
+                        self.str_maze[sy][ex] = "▓"
+                    if above_cell and above_cell.blocked:
+                        self.str_maze[ny][c1x] = "▒"
+                        self.str_maze[ny][c2x] = "▒"
+                        self.str_maze[ny][c3x] = "▒"
+                    else:
+                        self.str_maze[ny][ex] = "▓"
+                        self.str_maze[ny][c1x] = "▓"
+                        self.str_maze[ny][c2x] = "▓"
+                        self.str_maze[ny][c3x] = "▓"
+                        self.str_maze[ny][wx] = "▓"
+                    if below_cell and below_cell.blocked:
+                        self.str_maze[sy][c1x] = "▒"
+                        self.str_maze[sy][c2x] = "▒"
+                        self.str_maze[sy][c3x] = "▒"
+                    else:
+                        self.str_maze[sy][ex] = "▓"
+                        self.str_maze[sy][c1x] = "▓"
+                        self.str_maze[sy][c2x] = "▓"
+                        self.str_maze[sy][c3x] = "▓"
+                        self.str_maze[sy][wx] = "▓"
 
     def include_entry(self) -> None:
         """
@@ -305,7 +357,7 @@ class MazeDisplay:
                 if char == "█":
                     painted_char: str = f"{colour_wall}{char}{reset_colour}"
                     painted_row.append(painted_char)
-                elif char == "▓":
+                elif char == "▓" or char == "▒":
                     painted_char = f"{colour_42}{char}{reset_colour}"
                     painted_row.append(painted_char)
                 elif char == "E" or char == "X":
@@ -343,23 +395,31 @@ class MazeDisplay:
                 if choice <= 0 or choice >= 5:
                     raise ValueError("You must choose between 1 and 4")
                 elif choice == 1:
-                    print("\nYou've choosen 1: generating a new maze\n")
+                    subprocess.run("cls" if os.name == "nt" else "clear",
+                                   shell=True)
+                    print("\nYou've chosen 1: generating a new maze\n")
                     self.generator.generate_maze(random.randint(1, 9999))
                     print(self)
                 elif choice == 2:
                     if self.show_path:
                         self.show_path = False
-                        print("\nYou've choosen 2: hiding the path\n")
+                        subprocess.run("cls" if os.name == "nt" else "clear",
+                                       shell=True)
+                        print("\nYou've chosen 2: hiding the path\n")
                     else:
                         self.show_path = True
-                        print("\nYou've choosen 2: showing the path\n")
+                        subprocess.run("cls" if os.name == "nt" else "clear",
+                                       shell=True)
+                        print("\nYou've chosen 2: showing the path\n")
                     print(self)
                 elif choice == 3:
-                    print("\nYou've choosen 3: rotating colours\n")
+                    subprocess.run("cls" if os.name == "nt" else "clear",
+                                   shell=True)
+                    print("\nYou've chosen 3: rotating colours\n")
                     self.rotate_colours()
                     print(self)
                 elif choice == 4:
-                    print("\nYou've choosen 4: quitting the maze. Good bye!\n")
+                    print("\nYou've chosen 4: quitting the maze. Goodbye!\n")
                     break
             except ValueError as e:
                 print(f"\nInvalid choice: {e}\n")
