@@ -122,17 +122,6 @@ class MazeDisplay:
                     if below_cell and not below_cell.east.is_open:
                         self.str_maze[sy][ex] = "█"
 
-                if not cell.east.is_open:
-                    self.str_maze[cy][ex] = "█"
-                    if not cell.north.is_open:
-                        self.str_maze[ny][ex] = "█"
-                    if not cell.south.is_open:
-                        self.str_maze[sy][ex] = "█"
-                    if above_cell and not above_cell.east.is_open:
-                        self.str_maze[ny][ex] = "█"
-                    if below_cell and not below_cell.east.is_open:
-                        self.str_maze[sy][ex] = "█"
-
                 if not cell.west.is_open:
                     self.str_maze[cy][wx] = "█"
                     if not cell.north.is_open:
@@ -143,6 +132,17 @@ class MazeDisplay:
                         self.str_maze[ny][wx] = "█"
                     if below_cell and not below_cell.west.is_open:
                         self.str_maze[sy][wx] = "█"
+
+                if not cell.east.is_open:
+                    self.str_maze[cy][ex] = "█"
+                    if not cell.north.is_open:
+                        self.str_maze[ny][ex] = "█"
+                    if not cell.south.is_open:
+                        self.str_maze[sy][ex] = "█"
+                    if above_cell and not above_cell.east.is_open:
+                        self.str_maze[ny][ex] = "█"
+                    if below_cell and not below_cell.east.is_open:
+                        self.str_maze[sy][ex] = "█"
 
     def fill_42(self) -> None:
         """

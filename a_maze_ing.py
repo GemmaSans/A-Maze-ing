@@ -4,7 +4,7 @@ from display import MazeDisplay
 
 def main() -> None:
     try:
-        maze_structure = MazeGenerator(20, 20, (0, 0), (19, 1), False, 0)
+        maze_structure = MazeGenerator(20, 20, (0, 0), (19, 19), False, 0)
         maze_structure.generate_maze()
         # solution = maze_structure.solve_maze()
         maze_to_print = MazeDisplay(maze_structure)

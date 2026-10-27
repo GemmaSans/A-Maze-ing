@@ -22,12 +22,12 @@ install: venv
 	@${PIP} install -r requirements.txt
 	@echo "${GREEN}Requirements successfully installed${RESET}"
 
-build:
+build: install
 	@rm -rf dist/
 	@${PYTHON} -m build
 	@echo "${GREEN}Mazegen successfully packaged${RESET}"
 
-install-package: install build
+install-package: build
 	@${PIP} install dist/mazegen-*.whl
 	@echo "${GREEN}Mazegen package successfully installed${RESET}"
 
