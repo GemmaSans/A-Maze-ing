@@ -1,4 +1,5 @@
 from mazegen import MazeGenerator
+from custom_errors import OutputError
 
 
 def _walls_to_hexa(north: bool, east: bool, south: bool, west: bool) -> str:
@@ -28,7 +29,27 @@ def _maze_grid(maze: MazeGenerator) -> str:
     return "\n".join(rows)
 
 
+def _full_text(maze: MazeGenerator, solution: list[str]) -> str:
+    output = _maze_grid(maze)
+    output += "\n\n"
+    output += f"{maze.entry[0]},{maze.entry[1]}         # entry (x, y)\n"
+    output += f"{maze.exit[0]},{maze.exit[1]}         # exit (x, y)\n"
+    output += "".join(solution) + "\n"
+    return output
+
+
+def write_output(maze: MazeGenerator, filename: str, solve: list[str]) -> None:
+    text = _full_text(maze, solve)
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(text)
+    except OSError as e:
+        raise OutputError(f"Cannot write output file "
+                          f"'{filename}': {e.strerror}")
+
+
 if __name__ == "__main__":
-    maze = MazeGenerator(10, 15, (0, 0), (9, 14), True, 4)
+    maze = MazeGenerator(10, 15, (0, 0), (9, 14), True)
     maze.generate_maze()
-    print(_maze_grid(maze))
+    solution = maze.solve_maze()
+    print(_full_text(maze, solution))
