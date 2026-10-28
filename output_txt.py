@@ -49,7 +49,10 @@ def write_output(maze: MazeGenerator, filename: str, solve: list[str]) -> None:
 
 
 if __name__ == "__main__":
-    maze = MazeGenerator(10, 15, (0, 0), (9, 14), True)
-    maze.generate_maze()
-    solution = maze.solve_maze()
-    print(_full_text(maze, solution))
+    try:
+        maze = MazeGenerator(10, 15, (0, 0), (9, 14), True)
+        maze.generate_maze()
+        solution = maze.solve_maze()
+        write_output(maze, "maze.txt", solution)
+    except OutputError as e:
+        print(e)
