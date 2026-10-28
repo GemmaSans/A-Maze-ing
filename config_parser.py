@@ -1,6 +1,9 @@
 from typing import NotRequired, TypedDict
-from custom_errors import ConfigError
 import sys
+
+
+class ConfigError(Exception):
+    """Raised when the config file is missing or invalid."""
 
 
 class MazeConfig(TypedDict):

@@ -1,5 +1,8 @@
 from mazegen import MazeGenerator
-from custom_errors import OutputError
+
+
+class OutputError(Exception):
+    """Raised when the output file cannot be created or written"""
 
 
 def _walls_to_hexa(north: bool, east: bool, south: bool, west: bool) -> str:
