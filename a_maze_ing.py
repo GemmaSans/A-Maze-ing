@@ -2,11 +2,12 @@ from mazegen import MazeGenerator
 from display import MazeDisplay
 from config_parser import config_parser, ConfigError
 from output_txt import write_output, OutputError
+import sys
 
 
 def main() -> None:
     try:
-        config = config_parser("config.txt")
+        config = config_parser(sys.argv[1])
         width = config["width"]
         height = config["height"]
         entry_pos = config["entry_pos"]
