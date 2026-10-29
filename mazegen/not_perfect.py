@@ -6,7 +6,7 @@ import random
 def _is_3x3_open(cell: Cell, grid: list[list[Cell]]) -> bool:
     """
     Checks whether there is a 3x3 open space in the maze originated
-    at the given positions.
+    at the given cell.
 
     Parameters:
         cell (Cell): Top left-most cell of the area to check
@@ -18,7 +18,7 @@ def _is_3x3_open(cell: Cell, grid: list[list[Cell]]) -> bool:
     """
     height = len(grid)
     width = len(grid[0])
-    if any((cell.x < 0, cell.y < 0, cell.x + 3 > height, cell.y + 3 > width)):
+    if cell.x + 3 > width or cell.y + 3 > height:
         return False
     for y in range(3):
         for x in range(2):
@@ -44,6 +44,8 @@ def _creates_3x3(cell1: Cell, cell2: Cell, grid: list[list[Cell]]) -> bool:
     Returns:
         bool: True if there is a 3x3 open space, False otherwise.
     """
+    height = len(grid)
+    width = len(grid[0])
     diff_x = cell2.x - cell1.x
     diff_y = cell2.y - cell1.y
     if abs(diff_x) + abs(diff_y) != 1:
@@ -53,12 +55,16 @@ def _creates_3x3(cell1: Cell, cell2: Cell, grid: list[list[Cell]]) -> bool:
         top = min(cell1.y, cell2.y)
         for x in range(cell1.x - 2, cell1.x + 1):
             for y in range(top - 1, top + 1):
+                if not (0 <= x < width and 0 <= y < height):
+                    continue
                 if _is_3x3_open(grid[y][x], grid):
                     return True
-    elif not diff_y:
+    else:
         left = min(cell1.x, cell2.x)
         for x in range(left - 1, left + 1):
             for y in range(cell1.y - 2, cell1.y + 1):
+                if not (0 <= x < width and 0 <= y < height):
+                    continue
                 if _is_3x3_open(grid[y][x], grid):
                     return True
     return False
