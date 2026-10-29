@@ -102,13 +102,3 @@ def write_output(maze: MazeGenerator, filename: str, solve: list[str]) -> None:
     except OSError as e:
         raise OutputError(f"Cannot write output file "
                           f"'{filename}': {e.strerror}")
-
-
-if __name__ == "__main__":
-    try:
-        maze = MazeGenerator(10, 15, (0, 0), (9, 14), True)
-        maze.generate_maze()
-        solution = maze.solve_maze()
-        write_output(maze, "maze.txt", solution)
-    except OutputError as e:
-        print(e)
