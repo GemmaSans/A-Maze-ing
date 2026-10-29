@@ -1,5 +1,9 @@
 from typing import NotRequired, TypedDict
-import sys
+
+
+MANDATORY_KEYS: set[str] = {"WIDTH", "HEIGHT", "ENTRY",
+                            "EXIT", "OUTPUT_FILE", "PERFECT"}
+OPTIONAL_KEYS: set[str] = {"SEED"}
 
 
 class ConfigError(Exception):
@@ -7,6 +11,18 @@ class ConfigError(Exception):
 
 
 class MazeConfig(TypedDict):
+    """
+    Typed container for the validated maze configuration.
+
+    Fields:
+        width (int): width of the maze, in cells.
+        height (int): height of the maze, in cells.
+        entry_pos (tuple(int, int)): entry coordinates (x, y).
+        exit_pos (tuple(int, int)): exit coordinates (x, y).
+        output_file (str): name of the file the maze is written to.
+        perfect (bool): True if the maze must be perfect.
+        seed (int): optional seed for reproducibility.
+    """
     width: int
     height: int
     entry_pos: tuple[int, int]
@@ -16,12 +32,20 @@ class MazeConfig(TypedDict):
     seed: NotRequired[int]
 
 
-MANDATORY_KEYS: set[str] = {"WIDTH", "HEIGHT", "ENTRY",
-                            "EXIT", "OUTPUT_FILE", "PERFECT"}
-OPTIONAL_KEYS: set[str] = {"SEED"}
-
-
 def _parse_int(key: str, value: str) -> int:
+    """
+    Converts a config value to an integer.
+
+    Parameters:
+        key (str): name of the config key, used in error messages.
+        value (str): the raw text value.
+
+    Returns:
+        int: the converted value.
+
+    Raises:
+        ConfigError: if the value is not a valid integer.
+    """
     try:
         checked = int(value)
         return checked
@@ -30,6 +54,20 @@ def _parse_int(key: str, value: str) -> int:
 
 
 def _parse_tuple(key: str, value: str) -> tuple[int, int]:
+    """
+    Converts a config value such as '3,4' to a pair of integers.
+
+    Parameters:
+        key (str): name of the config key, used in error messages.
+        value (str): the raw text value.
+
+    Returns:
+        tuple(int, int): the (x, y) coordinates.
+
+    Raises:
+        ConfigError: if the value is not exactly two comma-separated
+            integers.
+    """
     coord = value.split(",")
     if len(coord) != 2:
         raise ConfigError(f"{key}: {value} is not a tuple(int, int)")
@@ -42,6 +80,20 @@ def _parse_tuple(key: str, value: str) -> tuple[int, int]:
 
 
 def _parse_bool(key: str, value: str) -> bool:
+    """
+    Converts a config value to a boolean. Only 'True' and 'False' are
+    accepted.
+
+    Parameters:
+        key (str): name of the config key, used in error messages.
+        value (str): the raw text value.
+
+    Returns:
+        bool: the converted value.
+
+    Raises:
+        ConfigError: if the value is neither 'True' nor 'False'.
+    """
     if value == "True":
         return True
     elif value == "False":
@@ -52,15 +104,20 @@ def _parse_bool(key: str, value: str) -> bool:
 
 def _read_file(file: str) -> dict[str, str]:
     """
-    Takes the name of a file and parses through it, accepting only
-    KEY=VALUE format of keys in MANDATORY_KEYS and OPTIONAL_KEYS.
-    Raises ConfigError if a value is not accepted.
+    Reads the config file and returns its raw KEY=VALUE pairs.
+
+    Blank lines and lines starting with '#' are ignored. Only keys in
+    MANDATORY_KEYS and OPTIONAL_KEYS are accepted.
 
     Parameters:
         file (str): the name of the config file.
 
     Returns:
-        dict(str, str): a dictionary of key=values.
+        dict(str, str): the keys and their raw string values.
+
+    Raises:
+        ConfigError: if the file cannot be read, a line is malformed, a
+            key is unknown or duplicated, or a mandatory key is missing.
     """
     config_dict: dict[str, str] = {}
     try:
@@ -90,6 +147,19 @@ def _read_file(file: str) -> dict[str, str]:
 
 
 def config_parser(file: str) -> MazeConfig:
+    """
+    Reads a config file and converts its values to their proper types.
+
+    Parameters:
+        file (str): the name of the config file.
+
+    Returns:
+        MazeConfig: the validated configuration. 'seed' is only present if
+        SEED was given in the file.
+
+    Raises:
+        ConfigError: if the file or any of its values is invalid.
+    """
     raw_config = _read_file(file)
     width = _parse_int("WIDTH", raw_config["WIDTH"])
     height = _parse_int("HEIGHT", raw_config["HEIGHT"])
@@ -110,11 +180,3 @@ def config_parser(file: str) -> MazeConfig:
     if "SEED" in raw_config:
         config["seed"] = _parse_int("SEED", raw_config["SEED"])
     return config
-
-
-if __name__ == "__main__":
-    try:
-        config = config_parser(sys.argv[1])
-        print(config)
-    except Exception as e:
-        print(e)
