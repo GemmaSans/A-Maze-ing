@@ -31,11 +31,11 @@ install-package: build
 	@${PIP} install dist/mazegen-*.whl
 	@echo "${GREEN}Mazegen package successfully installed${RESET}"
 
-run:
+run: venv
 	@echo "${BLUE}Generating maze...${RESET}"
 	@${PYTHON} a_maze_ing.py config.txt
 
-debug:
+debug: venv
 	@echo "${BLUE}Debugging...${RESET}"
 	@${PYTHON} -m pdb a_maze_ing.py config.txt
 
@@ -50,6 +50,7 @@ clean:
 	@echo "${BLUE}Cache and extra directories successfully deleted${RESET}"
 
 fclean: clean
+	@deactivate
 	@rm -rf maze_env
 	@echo "${BLUE}${VENV} successfully deleted${RESET}"
 
