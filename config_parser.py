@@ -1,4 +1,4 @@
-from typing import NotRequired, TypedDict
+from typing import TypedDict
 
 
 MANDATORY_KEYS: set[str] = {"WIDTH", "HEIGHT", "ENTRY",
@@ -10,9 +10,9 @@ class ConfigError(Exception):
     """Raised when the config file is missing or invalid."""
 
 
-class MazeConfig(TypedDict):
+class _RequiredConfig(TypedDict):
     """
-    Typed container for the validated maze configuration.
+    Mandatory fields of the maze configuration.
 
     Fields:
         width (int): width of the maze, in cells.
@@ -21,7 +21,6 @@ class MazeConfig(TypedDict):
         exit_pos (tuple(int, int)): exit coordinates (x, y).
         output_file (str): name of the file the maze is written to.
         perfect (bool): True if the maze must be perfect.
-        seed (int): optional seed for reproducibility.
     """
     width: int
     height: int
@@ -29,7 +28,19 @@ class MazeConfig(TypedDict):
     exit_pos: tuple[int, int]
     output_file: str
     perfect: bool
-    seed: NotRequired[int]
+
+
+class MazeConfig(_RequiredConfig, total=False):
+    """
+    Validated maze configuration.
+
+    Contains every field of _RequiredConfig, plus the optional ones below.
+
+    Fields:
+        seed (int): seed for reproducibility. Only present if SEED was
+            given in the config file.
+    """
+    seed: int
 
 
 def _parse_int(key: str, value: str) -> int:
