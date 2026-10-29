@@ -1,7 +1,7 @@
 from mazegen import MazeGenerator
 from display import MazeDisplay
 from config_parser import config_parser, ConfigError
-from output_txt import write_output, OutputError
+from output import write_output, OutputError
 import sys
 
 

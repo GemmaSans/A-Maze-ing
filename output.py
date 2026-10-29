@@ -76,8 +76,8 @@ def _full_text(maze: MazeGenerator, solve: list[str]) -> str:
     """
     output = _maze_grid(maze)
     output += "\n\n"
-    output += f"{maze.entry[0]},{maze.entry[1]}         # entry (x, y)\n"
-    output += f"{maze.exit[0]},{maze.exit[1]}         # exit (x, y)\n"
+    output += f"{maze.entry[0]},{maze.entry[1]} # entry (x, y)\n"
+    output += f"{maze.exit[0]},{maze.exit[1]}   # exit (x, y)\n"
     output += "".join(solve) + "\n"
     return output
 
