@@ -431,4 +431,3 @@ class MazeDisplay:
         """
         print(self)
         self.choice_menu()
-

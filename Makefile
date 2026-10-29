@@ -7,20 +7,27 @@ RESET = \033[0m
 VENV = maze_env
 PYTHON = ${VENV}/bin/python3
 PIP = ${VENV}/bin/pip
+STAMP = ${VENV}/.installed
 FLAKE8 = ${VENV}/bin/flake8
 MYPY = ${VENV}/bin/mypy
 
+FLAKE8_EXCLUDE = --extend-exclude=${VENV},build,dist
+MYPY_EXCLUDE = --exclude '^(${VENV}|build|dist)/'
 MYPY_FLAGS = --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
 
 all: install-package
 
-venv:
-	@python3 -m venv maze_env
+${VENV}:
+	@python3 -m venv ${VENV}
 	@echo "${GREEN}${VENV} successfully created${RESET}"
 
-install: venv
+${STAMP}: requirements.txt | ${VENV}
+	@echo "${BLUE}Installing requirements in $$(${PYTHON} -c 'import sys; print(sys.prefix)')${RESET}"
 	@${PIP} install -r requirements.txt
-	@echo "${GREEN}Requirements successfully installed${RESET}"
+	@touch ${STAMP}
+	@echo "${GREEN}Requirements successfully installed/checked${RESET}"
+
+install: ${STAMP}
 
 build: install
 	@rm -rf dist/
@@ -31,11 +38,12 @@ install-package: build
 	@${PIP} install dist/mazegen-*.whl
 	@echo "${GREEN}Mazegen package successfully installed${RESET}"
 
-run: venv
+run: install
+	@echo "${BLUE}Using Python in ${VENV}: $$(${PYTHON} -c 'import sys; print(sys.prefix)')${RESET}"
 	@echo "${BLUE}Generating maze...${RESET}"
 	@${PYTHON} a_maze_ing.py config.txt
 
-debug: venv
+debug: install
 	@echo "${BLUE}Debugging...${RESET}"
 	@${PYTHON} -m pdb a_maze_ing.py config.txt
 
@@ -50,17 +58,18 @@ clean:
 	@echo "${BLUE}Cache and extra directories successfully deleted${RESET}"
 
 fclean: clean
-	@deactivate
-	@rm -rf maze_env
+	@rm -rf ${VENV}
+	@rm -f maze.txt
 	@echo "${BLUE}${VENV} successfully deleted${RESET}"
 
-lint:
-	@${FLAKE8} .
-	@${MYPY} . ${MYPY_FLAGS}
+lint: install
+	@${FLAKE8} . ${FLAKE8_EXCLUDE}
+	@${MYPY} . ${MYPY_EXCLUDE} ${MYPY_FLAGS}
 	@echo "${GREEN}Flake8 and mypy successfully checked${RESET}"
 
-lint-strict: lint
-	@${MYPY} . --strict
+lint-strict: install
+	@${FLAKE8} . ${FLAKE8_EXCLUDE}
+	@${MYPY} . ${MYPY_EXCLUDE} --strict
 	@echo "${GREEN}Flake8 and mypy strict successfully checked${RESET}"
 
-.PHONY: all venv install build install-package run debug clean lint lint-strict
+.PHONY: all install build install-package run debug clean fclean lint lint-strict
