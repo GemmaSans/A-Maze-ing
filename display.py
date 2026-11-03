@@ -37,21 +37,26 @@ class MazeDisplay:
         """
 
         self.generator = generator
-        self.path = path
-        self.show_path: bool = isinstance(self.path, list)
         self.width_canva: int = self.generator.width * 4 + 1
         self.height_canva: int = self.generator.height * 2 + 1
         self.str_maze: list[list[str]] = []
+
+        self.path = path
+        self.path_limit: int | None = None
+        self.solution: list[str] = self.generator.solution
+        self.len_solution: int = len(self.solution)
+        self.show_path: bool = isinstance(self.path, list)
+
         self.colours: dict[str, str] = {"red": "\033[31m",
-                                        "green": "\033[32m",
-                                        "yellow": "\033[38;2;255;230;0m",
                                         "blue": "\033[34m",
+                                        "yellow": "\033[38;2;255;230;0m",
+                                        "green": "\033[32m",
+                                        "white": "\033[37m",
                                         "magenta": "\033[35m",
-                                        "cyan": "\033[36m",
-                                        "white": "\033[37m"
+                                        "cyan": "\033[36m"
                                         }
         self.colour_index: int = 0
-        self.path_limit: int | None = None
+        self.colour_42_i: int = self.colour_index + 1
 
     def check_maze(self) -> None:
         if not self.generator.grid:
@@ -248,15 +253,15 @@ class MazeDisplay:
 
         self.str_maze[cy][cx] = "X"
 
-    def include_path(self, limit=None) -> None:
+    def include_path(self) -> None:
         """
         Calculates and draws the solution path using directional characters
         ('┃', '━', '┓', etc.) onto the canvas grid up to an optional
         step limit.
         """
         x, y = self.generator.entry
-        solution = self.generator.solution
-        for i in range(limit if limit is not None else len(solution)):
+        for i in range(self.path_limit if self.path_limit is not None
+                       else self.len_solution):
             ny = y * 2
             cy = y * 2 + 1
             sy = y * 2 + 2
@@ -267,56 +272,56 @@ class MazeDisplay:
             c3x = x * 4 + 3
             ex = x * 4 + 4
 
-            if solution[i] == 'N':
+            if self.solution[i] == 'N':
                 self.str_maze[ny][c2x] = "┃"
-                if i < len(solution) - 1:
-                    if solution[i + 1] == 'N':
+                if i < self.len_solution - 1:
+                    if self.solution[i + 1] == 'N':
                         self.str_maze[ny - 1][c2x] = "┃"
-                    elif solution[i + 1] == 'W':
+                    elif self.solution[i + 1] == 'W':
                         self.str_maze[ny - 1][c2x] = "┓"
-                    elif solution[i + 1] == 'E':
+                    elif self.solution[i + 1] == 'E':
                         self.str_maze[ny - 1][c2x] = "┏"
                 y -= 1
-            elif solution[i] == 'S':
+            elif self.solution[i] == 'S':
                 self.str_maze[sy][c2x] = "┃"
-                if i < len(solution) - 1:
-                    if solution[i + 1] == 'S':
+                if i < self.len_solution - 1:
+                    if self.solution[i + 1] == 'S':
                         self.str_maze[sy + 1][c2x] = "┃"
-                    elif solution[i + 1] == 'W':
+                    elif self.solution[i + 1] == 'W':
                         self.str_maze[sy + 1][c2x] = "┛"
-                    elif solution[i + 1] == 'E':
+                    elif self.solution[i + 1] == 'E':
                         self.str_maze[sy + 1][c2x] = "┗"
                 y += 1
-            elif solution[i] == 'W':
+            elif self.solution[i] == 'W':
                 self.str_maze[cy][c1x] = "━"
                 self.str_maze[cy][wx] = "━"
-                if i < len(solution) - 1:
-                    if solution[i + 1] == 'N':
+                if i < self.len_solution - 1:
+                    if self.solution[i + 1] == 'N':
                         self.str_maze[cy][wx - 1] = "━"
                         self.str_maze[cy][wx - 2] = "┗"
-                    elif solution[i + 1] == 'S':
+                    elif self.solution[i + 1] == 'S':
                         self.str_maze[cy][wx - 1] = "━"
                         self.str_maze[cy][wx - 2] = "┏"
-                    elif solution[i + 1] == 'W':
+                    elif self.solution[i + 1] == 'W':
                         self.str_maze[cy][wx - 1] = "━"
                         self.str_maze[cy][wx - 2] = "━"
                 x -= 1
-            elif solution[i] == 'E':
+            elif self.solution[i] == 'E':
                 self.str_maze[cy][c3x] = "━"
                 self.str_maze[cy][ex] = "━"
-                if i < len(solution) - 1:
-                    if solution[i + 1] == 'N':
+                if i < self.len_solution - 1:
+                    if self.solution[i + 1] == 'N':
                         self.str_maze[cy][ex + 1] = "━"
                         self.str_maze[cy][ex + 2] = "┛"
-                    elif solution[i + 1] == 'S':
+                    elif self.solution[i + 1] == 'S':
                         self.str_maze[cy][ex + 1] = "━"
                         self.str_maze[cy][ex + 2] = "┓"
-                    elif solution[i + 1] == 'E':
+                    elif self.solution[i + 1] == 'E':
                         self.str_maze[cy][ex + 1] = "━"
                         self.str_maze[cy][ex + 2] = "━"
                 x += 1
 
-    def pack_maze(self, limit=None) -> None:
+    def pack_maze(self) -> None:
         """
         Coordinates the full assembly process of the maze canvas:
         initializes the canvas, generates walls, optionally adds the solution
@@ -325,10 +330,17 @@ class MazeDisplay:
         self.canva_init()
         self.str_generate()
         if self.show_path:
-            self.include_path(self.path_limit)
+            self.include_path()
         self.include_entry()
         self.include_exit()
         self.fill_42()
+
+    def rotate_42_colours(self) -> None:
+        """
+        Advances the internal colour index only for 42 patron to cycle through
+        the available ANSI color palette.
+        """
+        self.colour_42_i += 1
 
     def rotate_colours(self) -> None:
         """
@@ -336,6 +348,7 @@ class MazeDisplay:
         ANSI color palette.
         """
         self.colour_index += 1
+        self.colour_42_i += 1
 
     def paint_maze(self) -> list[list[str]]:
         """
@@ -349,7 +362,7 @@ class MazeDisplay:
         self.pack_maze()
 
         index_wall = self.colour_index % len(self.colours)
-        index_42 = (self.colour_index + 1) % len(self.colours)
+        index_42 = (self.colour_42_i) % len(self.colours)
         index_ex = (self.colour_index + 2) % len(self.colours)
         index_path = (self.colour_index + 3) % len(self.colours)
 
@@ -395,8 +408,7 @@ class MazeDisplay:
         Animates the progression of the solution path frame by frame on the
         terminal using ANSI cursor home positioning for smooth rendering.
         """
-        len_solution = len(self.generator.solution)
-        for i in range(1, len_solution + 1):
+        for i in range(1, self.len_solution + 1):
             self.path_limit = i
             # subprocess.run("cls" if os.name == "nt" else "clear",
             #                shell=True)
@@ -415,13 +427,14 @@ class MazeDisplay:
             print("=== A-Maze-ing ===")
             print("1. Re-generate a new maze")
             print("2. Show / Hide the shortest path")
-            print("3. Rotate the wall colours")
-            print("4. Quit")
-            str_choice = input("Choice? (1-4): ")
+            print("3. Rotate colours")
+            print("4. Rotate only the 42 colours")
+            print("5. Quit")
+            str_choice = input("Choice? (1-5): ")
             try:
                 choice = int(str_choice)
-                if choice <= 0 or choice >= 5:
-                    raise ValueError("You must choose between 1 and 4")
+                if choice <= 0 or choice >= 6:
+                    raise ValueError("You must choose between 1 and 5")
                 elif choice == 1:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
@@ -448,7 +461,13 @@ class MazeDisplay:
                     print(self)
                     print("\nYou've chosen 3: rotating colours\n")
                 elif choice == 4:
-                    print("\nYou've chosen 4: quitting the maze. Goodbye!\n")
+                    subprocess.run("cls" if os.name == "nt" else "clear",
+                                   shell=True)
+                    self.rotate_42_colours()
+                    print(self)
+                    print("\nYou've chosen 4: rotating only the 42 colours\n")
+                elif choice == 5:
+                    print("\nYou've chosen 5: quitting the maze. Goodbye!\n")
                     break
             except ValueError as e:
                 print(f"\nInvalid choice: {e}\n")
