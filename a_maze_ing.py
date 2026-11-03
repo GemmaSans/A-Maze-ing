@@ -1,5 +1,5 @@
 from mazegen import MazeGenerator
-from display import MazeDisplay
+from display import MazeDisplay, DisplayError
 from config_parser import config_parser, ConfigError
 from output import write_output, OutputError
 import sys
@@ -22,10 +22,10 @@ def main() -> None:
                                        entry_pos, exit_pos, perfect, seed)
         maze_structure.generate_maze()
         write_output(maze_structure, config["output_file"])
-        maze_to_print = MazeDisplay(maze_structure)
+        maze_to_print = MazeDisplay(maze_structure, maze_structure.solution)
         maze_to_print.show_maze()
 
-    except (ConfigError, ValueError, OutputError) as e:
+    except (ConfigError, ValueError, OutputError, DisplayError) as e:
         print(e)
 
 

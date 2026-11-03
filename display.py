@@ -2,6 +2,11 @@ from mazegen import MazeGenerator
 import random
 import os
 import subprocess
+import time
+
+
+class DisplayError(Exception):
+    """Raised when the display fails."""
 
 
 class MazeDisplay:
@@ -46,6 +51,13 @@ class MazeDisplay:
                                         "white": "\033[37m"
                                         }
         self.colour_index: int = 0
+        self.path_limit: int | None = None
+
+    def check_maze(self) -> None:
+        if not self.generator.grid:
+            raise DisplayError("The maze has not been generated yet!\n"
+                               "Use the method MazeGenerator.generate_maze()"
+                               " before anything else")
 
     def canva_init(self) -> None:
         """
@@ -236,14 +248,15 @@ class MazeDisplay:
 
         self.str_maze[cy][cx] = "X"
 
-    def include_path(self) -> None:
+    def include_path(self, limit=None) -> None:
         """
         Calculates and draws the solution path using directional characters
-        ('┃', '━', '┓', etc.) onto the canvas grid.
+        ('┃', '━', '┓', etc.) onto the canvas grid up to an optional
+        step limit.
         """
         x, y = self.generator.entry
-        solution = self.generator.solve_maze()
-        for i in range(len(solution)):
+        solution = self.generator.solution
+        for i in range(limit if limit is not None else len(solution)):
             ny = y * 2
             cy = y * 2 + 1
             sy = y * 2 + 2
@@ -303,7 +316,7 @@ class MazeDisplay:
                         self.str_maze[cy][ex + 2] = "━"
                 x += 1
 
-    def pack_maze(self) -> None:
+    def pack_maze(self, limit=None) -> None:
         """
         Coordinates the full assembly process of the maze canvas:
         initializes the canvas, generates walls, optionally adds the solution
@@ -312,8 +325,7 @@ class MazeDisplay:
         self.canva_init()
         self.str_generate()
         if self.show_path:
-            self.include_path()
-            # print(self.path)
+            self.include_path(self.path_limit)
         self.include_entry()
         self.include_exit()
         self.fill_42()
@@ -378,6 +390,22 @@ class MazeDisplay:
         return ("\n".join("".join(painted_row) for painted_row
                           in painted_maze))
 
+    def animate_path(self) -> None:
+        """
+        Animates the progression of the solution path frame by frame on the
+        terminal using ANSI cursor home positioning for smooth rendering.
+        """
+        len_solution = len(self.generator.solution)
+        for i in range(1, len_solution + 1):
+            self.path_limit = i
+            # subprocess.run("cls" if os.name == "nt" else "clear",
+            #                shell=True)
+            print("\033[H" + str(self), end="")
+            print("\n\nYou've chosen 2: showing the path")
+            time.sleep(0.05)
+        print()
+        self.path_limit = None
+
     def choice_menu(self) -> None:
         """
         Runs an interactive terminal menu allowing the user to regenerate
@@ -393,35 +421,36 @@ class MazeDisplay:
             try:
                 choice = int(str_choice)
                 if choice <= 0 or choice >= 5:
-                    raise ValueError("You must choose between 1 and 4")
+                    raise DisplayError("You must choose between 1 and 4")
                 elif choice == 1:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
-                    print("\nYou've chosen 1: generating a new maze\n")
                     self.generator.generate_maze(random.randint(1, 9999))
                     print(self)
+                    print("\nYou've chosen 1: generating a new maze\n")
                 elif choice == 2:
                     if self.show_path:
                         self.show_path = False
                         subprocess.run("cls" if os.name == "nt" else "clear",
                                        shell=True)
+                        print(self)
                         print("\nYou've chosen 2: hiding the path\n")
                     else:
                         self.show_path = True
                         subprocess.run("cls" if os.name == "nt" else "clear",
                                        shell=True)
                         print("\nYou've chosen 2: showing the path\n")
-                    print(self)
+                        self.animate_path()
                 elif choice == 3:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
-                    print("\nYou've chosen 3: rotating colours\n")
                     self.rotate_colours()
                     print(self)
+                    print("\nYou've chosen 3: rotating colours\n")
                 elif choice == 4:
                     print("\nYou've chosen 4: quitting the maze. Goodbye!\n")
                     break
-            except ValueError as e:
+            except DisplayError as e:
                 print(f"\nInvalid choice: {e}\n")
 
     def show_maze(self) -> None:
@@ -429,5 +458,9 @@ class MazeDisplay:
         Prints the initial maze representation and launches the interactive
         menu loop.
         """
-        print(self)
-        self.choice_menu()
+        try:
+            self.check_maze()
+            print(self)
+            self.choice_menu()
+        except DisplayError as e:
+            print(e)
