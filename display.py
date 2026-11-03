@@ -421,7 +421,7 @@ class MazeDisplay:
             try:
                 choice = int(str_choice)
                 if choice <= 0 or choice >= 5:
-                    raise DisplayError("You must choose between 1 and 4")
+                    raise ValueError("You must choose between 1 and 4")
                 elif choice == 1:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
@@ -450,7 +450,7 @@ class MazeDisplay:
                 elif choice == 4:
                     print("\nYou've chosen 4: quitting the maze. Goodbye!\n")
                     break
-            except DisplayError as e:
+            except ValueError as e:
                 print(f"\nInvalid choice: {e}\n")
 
     def show_maze(self) -> None:
