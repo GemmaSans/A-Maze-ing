@@ -6,6 +6,9 @@ import sys
 
 
 def main() -> None:
+    if len(sys.argv) != 2:
+        print("Usage: python3 a_maze_ing.py <config_file>")
+        sys.exit(1)
     try:
         config = config_parser(sys.argv[1])
         width = config["width"]
@@ -13,7 +16,7 @@ def main() -> None:
         entry_pos = config["entry_pos"]
         exit_pos = config["exit_pos"]
         perfect = config["perfect"]
-        seed = config["seed"]
+        seed = config.get("seed")
 
         maze_structure = MazeGenerator(width, height,
                                        entry_pos, exit_pos, perfect, seed)

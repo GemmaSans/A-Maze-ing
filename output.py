@@ -95,6 +95,10 @@ def write_output(maze: MazeGenerator, filename: str) -> None:
     Raises:
         OutputError: if the file cannot be created or written.
     """
+    if not maze.grid:
+        raise OutputError("The maze has not been generated yet!\n"
+                          "Use the method MazeGenerator.generate_maze()"
+                          " before anything else")
     text = _full_text(maze)
     try:
         with open(filename, "w", encoding="utf-8") as f:

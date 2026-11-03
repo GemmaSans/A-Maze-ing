@@ -2,6 +2,7 @@ from .grid_building import get_42_coords, build_base_grid, block_42_cells
 from .algorithm_backtrack import backtracking
 from .pathfinder import bfs
 from .not_perfect import convert_to_imperfect
+from .cell_structure import Cell
 import random
 
 
@@ -59,6 +60,8 @@ class MazeGenerator():
 
         self.entry = entry_pos
         self.exit = exit_pos
+        self.grid: list[list[Cell]] = []
+        self.solution: list[str] = []
 
     def _build_base_grid(self) -> None:
         """
