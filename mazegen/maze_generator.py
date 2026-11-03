@@ -72,6 +72,10 @@ class MazeGenerator():
         """Uses the backtracking algorithm to break walls between cells."""
         backtracking(self.grid)
 
+    def _solve_maze(self) -> None:
+        """Saves the solution of the maze in a parameter"""
+        self.solution = bfs(self.grid, self.entry, self.exit)
+
     def generate_maze(self, seed: int | None = None) -> None:
         """Generates the maze using a backtracking algorithm."""
         if seed:
@@ -81,7 +85,4 @@ class MazeGenerator():
         self._backtracking_algorithm()
         if not self.is_perfect:
             convert_to_imperfect(self.grid)
-
-    def solve_maze(self) -> list[str]:
-        """Returns the shortest path to the exit using BFS"""
-        return bfs(self.grid, self.entry, self.exit)
+        self._solve_maze()

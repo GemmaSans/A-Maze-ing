@@ -58,7 +58,7 @@ def _maze_grid(maze: MazeGenerator) -> str:
     return "\n".join(rows)
 
 
-def _full_text(maze: MazeGenerator, solve: list[str]) -> str:
+def _full_text(maze: MazeGenerator) -> str:
     """
     Builds the complete content of the output file.
 
@@ -78,11 +78,11 @@ def _full_text(maze: MazeGenerator, solve: list[str]) -> str:
     output += "\n\n"
     output += f"{maze.entry[0]},{maze.entry[1]} # entry (x, y)\n"
     output += f"{maze.exit[0]},{maze.exit[1]}   # exit (x, y)\n"
-    output += "".join(solve) + "\n"
+    output += "".join(maze.solution) + "\n"
     return output
 
 
-def write_output(maze: MazeGenerator, filename: str, solve: list[str]) -> None:
+def write_output(maze: MazeGenerator, filename: str) -> None:
     """
     Writes the maze to a file in the hexadecimal output format.
 
@@ -95,7 +95,7 @@ def write_output(maze: MazeGenerator, filename: str, solve: list[str]) -> None:
     Raises:
         OutputError: if the file cannot be created or written.
     """
-    text = _full_text(maze, solve)
+    text = _full_text(maze)
     try:
         with open(filename, "w", encoding="utf-8") as f:
             f.write(text)

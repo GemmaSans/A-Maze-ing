@@ -18,8 +18,7 @@ def main() -> None:
         maze_structure = MazeGenerator(width, height,
                                        entry_pos, exit_pos, perfect, seed)
         maze_structure.generate_maze()
-        solution = maze_structure.solve_maze()
-        write_output(maze_structure, config["output_file"], solution)
+        write_output(maze_structure, config["output_file"])
         maze_to_print = MazeDisplay(maze_structure)
         maze_to_print.show_maze()
 
