@@ -2,6 +2,7 @@ from .grid_building import get_42_coords, build_base_grid, block_42_cells
 from .algorithm_backtrack import backtracking
 from .pathfinder import bfs
 from .not_perfect import convert_to_imperfect
+from .cell_structure import Cell
 import random
 
 
@@ -59,6 +60,8 @@ class MazeGenerator():
 
         self.entry = entry_pos
         self.exit = exit_pos
+        self.grid: list[list[Cell]] = []
+        self.solution: list[str] = []
 
     def _build_base_grid(self) -> None:
         """
@@ -72,6 +75,10 @@ class MazeGenerator():
         """Uses the backtracking algorithm to break walls between cells."""
         backtracking(self.grid)
 
+    def _solve_maze(self) -> None:
+        """Saves the solution of the maze in a parameter"""
+        self.solution = bfs(self.grid, self.entry, self.exit)
+
     def generate_maze(self, seed: int | None = None) -> None:
         """Generates the maze using a backtracking algorithm."""
         if seed:
@@ -81,7 +88,4 @@ class MazeGenerator():
         self._backtracking_algorithm()
         if not self.is_perfect:
             convert_to_imperfect(self.grid)
-
-    def solve_maze(self) -> list[str]:
-        """Returns the shortest path to the exit using BFS"""
-        return bfs(self.grid, self.entry, self.exit)
+        self._solve_maze()
