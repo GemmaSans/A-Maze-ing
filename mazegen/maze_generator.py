@@ -62,6 +62,8 @@ class MazeGenerator():
         self.exit = exit_pos
         self.grid: list[list[Cell]] = []
         self.solution: list[str] = []
+        if not self.coords_42:
+            print("[WARNING] Maze is too small to contain the 42 pattern")
 
     def _build_base_grid(self) -> None:
         """
