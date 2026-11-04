@@ -338,8 +338,8 @@ class MazeDisplay:
 
     def rotate_walls_colours(self) -> None:
         """
-        Advances the internal colour index only for 42 patron to cycle through
-        the available ANSI color palette.
+        Advances the internal colour index only for the maze walls to cycle
+        through the available ANSI color palette.
         """
         self.colour_walls_i += 1
 
@@ -421,7 +421,8 @@ class MazeDisplay:
             self.path_limit = i
             # subprocess.run("cls" if os.name == "nt" else "clear",
             #                shell=True)
-            print("\033[H" + str(self), end="")
+            # print(self)
+            print("\033[H\033[J" + str(self), end="", flush=True)
             print("\n\nYou've chosen 2: showing the path")
             time.sleep(0.05)
         print()
@@ -460,9 +461,6 @@ class MazeDisplay:
                         print("\nYou've chosen 2: hiding the path\n")
                     else:
                         self.show_path = True
-                        subprocess.run("cls" if os.name == "nt" else "clear",
-                                       shell=True)
-                        print("\nYou've chosen 2: showing the path\n")
                         self.animate_path()
                 elif choice == 3:
                     subprocess.run("cls" if os.name == "nt" else "clear",
@@ -471,18 +469,23 @@ class MazeDisplay:
                     print(self)
                     print("\nYou've chosen 3: rotating all colours\n")
                 elif choice == 4:
-                    subprocess.run("cls" if os.name == "nt" else "clear",
-                                   shell=True)
-                    self.rotate_42_colours()
-                    print(self)
-                    print("\nYou've chosen 4: rotating only the 42 colours\n")
+                    if self.generator.coords_42:
+                        subprocess.run("cls" if os.name == "nt" else "clear",
+                                       shell=True)
+                        self.rotate_42_colours()
+                        print(self)
+                        print("\nYou've chosen 4: rotating only 42 colours\n")
+                    else:
+                        print("\nUnavailable choice: Maze is too small to "
+                              "contain the 42 pattern. Choose another "
+                              "option\n")
                 elif choice == 5:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
                     self.rotate_walls_colours()
                     print(self)
                     print("\nYou've chosen 5: rotating only the walls"
-                          "colours\n")
+                          " colours\n")
                 elif choice == 6:
                     print("\nYou've chosen 6: quitting the maze. Goodbye!\n")
                     break

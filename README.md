@@ -2,6 +2,63 @@
 
 # A-Maze-ing
 
+1. [Description](#description)
+
+   1.1. [Features](#features)
+
+2. [Instructions](#instructions)
+
+   2.1. [Makefile Commands](#makefile-commands)
+
+   2.2. [Requirements](#requirements)
+
+   2.3. [Installation & Execution](#installation--execution)
+
+3. [Configuration file](#configuration-file)
+
+4. [Output file format](#output-file-format)
+
+5. [Maze generation algorithm](#maze-generation-algorithm)
+
+   5.1. [Perfect maze: recursive backtracker](#perfect-maze-recursive-backtracker)
+
+   5.2. [Non-perfect maze: dead-end removal](#non-perfect-maze-dead-end-removal)
+
+   5.3. [Why this algorithm](#why-this-algorithm)
+
+   5.4. [Shortest path](#shortest-path)
+
+   5.5. [The "42" pattern](#the-42-pattern)
+
+6. [Reusable code](#reusable-code)
+
+   6.1. [Data structure](#data-structure)
+
+   6.2. [Usage](#usage)
+
+   6.3. [Accessing the result](#accessing-the-result)
+
+7. [Visual representation](#visual-representation)
+
+8. [Testing](#testing)
+
+9. [Team and project management](#team-and-project-management)
+
+   9.1. [Roles](#roles)
+
+   9.2. [Planning](#planning)
+
+   9.3. [What worked well and what could be improved](#what-worked-well-and-what-could-be-improved)
+
+   9.4. [Tools used](#tools-used)
+
+10. [Resources](#resources)
+
+    10.1. [References](#references)
+
+    10.2. [Use of AI](#use-of-ai)
+
+
 ## Description
 
 A-Maze-ing is a maze generator written in Python 3.10+. It reads a configuration file, generates a maze, writes it to a file using a hexadecimal wall representation, and displays it with an interactive visual representation.
@@ -45,7 +102,7 @@ The project has two parts:
 
 Dependencies can be installed using the `make install` command.
 
-## Installation & Execution
+### Installation & Execution
 
 The repository uses a Virtual Environment (`maze_env`) managed via a standard `Makefile`. 
 
@@ -213,8 +270,6 @@ maze.coords_42         # coordinates of the "42" cells (empty if omitted)
 
 ## Visual representation
 
-### Advanced Features & Terminal UI
-
 The interactive display module (`display.py`) provides a terminal-based interface (`MazeDisplay`) that renders the maze in full ANSI colour —where each individual cell is scaled to $3 \times 5$ characters— alongside an interactive menu with 6 choices:
 
 1. **Re-generate a new maze:** Dynamically creates a new maze with a random seed without restarting the application.
@@ -240,7 +295,7 @@ The interactive display module (`display.py`) provides a terminal-based interfac
 ### Roles
 
 - **gsans-co**: maze generation core: data structures, "42" pattern, backtracker, non-perfect conversion, pathfinding; config parser; output file.
-- **lucgomez**: display and interaction; Makefile; MazeGenerator package; README.
+- **lucgomez**: display and interaction; Makefile; MazeGenerator package; LICENSE;README.
 
 ### Planning
 
@@ -248,9 +303,14 @@ The first step on the planning was to agree on the data structures for the MazeG
 
 ### What worked well and what could be improved
 
-- Working on separate files and branches avoided most merge conflicts.
-- Agreeing early on the interface between the generator and the rest of the program.
-- Writing helpers with small, single responsibilities made bugs easier to find.
+**What worked well:**
+- Working on separate files and feature branches avoided most Git merge conflicts.
+- Agreeing early on the interface between the generator and the rest of the program made integration seamless.
+- Writing helpers with small, single responsibilities made bugs easier to isolate and fix.
+
+**What could be improved:**
+- Writing automated unit tests earlier in the development process to test grid boundaries and edge cases automatically rather than relying on manual CLI runs.
+- Time management regarding terminal visual details, as cell scaling and ANSI menu controls required more refactoring than initially planned.
 
 ### Tools used
 
