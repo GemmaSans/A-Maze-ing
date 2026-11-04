@@ -31,7 +31,9 @@ install: ${STAMP}
 
 build: install
 	@rm -rf dist/
+	@rm -f mazegen-*.whl mazegen-*.tar.gz
 	@${PYTHON} -m build
+	@cp dist/mazegen-*.whl .
 	@echo "${GREEN}Mazegen successfully packaged${RESET}"
 
 install-package: build
@@ -52,15 +54,17 @@ clean:
 	@rm -rf __pycache__
 	@rm -rf mazegen/__pycache__
 	@rm -rf mazegen/.mypy_cache
-	@rm -rf dist/ 
-	@rm -rf build/ 
-	@rm -rf mazegen.egg-info
 	@echo "${BLUE}Cache and extra directories successfully deleted${RESET}"
 
 fclean: clean
+	@rm -rf dist/ 
+	@rm -rf build/ 
+	@rm -rf mazegen.egg-info
 	@rm -rf ${VENV}
 	@rm -f maze.txt
-	@echo "${BLUE}${VENV} successfully deleted${RESET}"
+	@echo "${BLUE}${VENV}, build artifacts and outputs successfully deleted${RESET}"
+
+re: fclean all
 
 lint: install
 	@${FLAKE8} . ${FLAKE8_EXCLUDE}
@@ -72,4 +76,4 @@ lint-strict: install
 	@${MYPY} . ${MYPY_EXCLUDE} --strict
 	@echo "${GREEN}Flake8 and mypy strict successfully checked${RESET}"
 
-.PHONY: all install build install-package run debug clean fclean lint lint-strict
+.PHONY: all install build install-package run debug clean fclean re lint lint-strict
