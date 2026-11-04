@@ -105,9 +105,10 @@ def _parse_bool(key: str, value: str) -> bool:
     Raises:
         ConfigError: if the value is neither 'True' nor 'False'.
     """
-    if value == "True":
+    lowercase = value.lower()
+    if lowercase == "true":
         return True
-    elif value == "False":
+    elif lowercase == "false":
         return False
     else:
         raise ConfigError(f"{key}: {value} is not a bool")
@@ -138,13 +139,16 @@ def _read_file(file: str) -> dict[str, str]:
                 if not line or line.startswith("#"):
                     continue
                 if "=" in line:
-                    key, _, value = line.partition("=")
+                    raw_key, _, value = line.partition("=")
+                    key = raw_key.upper()
                     if not key:
                         raise ConfigError(f"Line {num}: empty key")
                     if key not in MANDATORY_KEYS | OPTIONAL_KEYS:
-                        raise ConfigError(f"Line {num}: unknown key '{key}'")
+                        raise ConfigError(f"Line {num}: unknown key "
+                                          f"'{raw_key}'")
                     if key in config_dict:
-                        raise ConfigError(f"Line {num}: duplicate key '{key}'")
+                        raise ConfigError(f"Line {num}: duplicate key "
+                                          f"'{raw_key}'")
                     config_dict[key] = value
                 else:
                     raise ConfigError(f"Line {num}: expected KEY=VALUE, "
