@@ -56,6 +56,7 @@ class MazeDisplay:
                                         "cyan": "\033[36m"
                                         }
         self.colour_index: int = 0
+        self.colour_walls_i: int = self.colour_index
         self.colour_42_i: int = self.colour_index + 1
 
     def check_maze(self) -> None:
@@ -335,6 +336,13 @@ class MazeDisplay:
         self.include_exit()
         self.fill_42()
 
+    def rotate_walls_colours(self) -> None:
+        """
+        Advances the internal colour index only for 42 patron to cycle through
+        the available ANSI color palette.
+        """
+        self.colour_walls_i += 1
+
     def rotate_42_colours(self) -> None:
         """
         Advances the internal colour index only for 42 patron to cycle through
@@ -348,6 +356,7 @@ class MazeDisplay:
         ANSI color palette.
         """
         self.colour_index += 1
+        self.colour_walls_i += 1
         self.colour_42_i += 1
 
     def paint_maze(self) -> list[list[str]]:
@@ -361,8 +370,8 @@ class MazeDisplay:
         """
         self.pack_maze()
 
-        index_wall = self.colour_index % len(self.colours)
-        index_42 = (self.colour_42_i) % len(self.colours)
+        index_wall = self.colour_walls_i % len(self.colours)
+        index_42 = self.colour_42_i % len(self.colours)
         index_ex = (self.colour_index + 2) % len(self.colours)
         index_path = (self.colour_index + 3) % len(self.colours)
 
@@ -429,12 +438,13 @@ class MazeDisplay:
             print("2. Show / Hide the shortest path")
             print("3. Rotate colours")
             print("4. Rotate only the 42 colours")
-            print("5. Quit")
-            str_choice = input("Choice? (1-5): ")
+            print("5. Rotate only the walls colours")
+            print("6. Quit")
+            str_choice = input("Choice? (1-6): ")
             try:
                 choice = int(str_choice)
-                if choice <= 0 or choice >= 6:
-                    raise ValueError("You must choose between 1 and 5")
+                if choice <= 0 or choice >= 7:
+                    raise ValueError("You must choose between 1 and 6")
                 elif choice == 1:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
@@ -459,7 +469,7 @@ class MazeDisplay:
                                    shell=True)
                     self.rotate_colours()
                     print(self)
-                    print("\nYou've chosen 3: rotating colours\n")
+                    print("\nYou've chosen 3: rotating all colours\n")
                 elif choice == 4:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
@@ -467,7 +477,14 @@ class MazeDisplay:
                     print(self)
                     print("\nYou've chosen 4: rotating only the 42 colours\n")
                 elif choice == 5:
-                    print("\nYou've chosen 5: quitting the maze. Goodbye!\n")
+                    subprocess.run("cls" if os.name == "nt" else "clear",
+                                   shell=True)
+                    self.rotate_walls_colours()
+                    print(self)
+                    print("\nYou've chosen 5: rotating only the walls"
+                          "colours\n")
+                elif choice == 6:
+                    print("\nYou've chosen 6: quitting the maze. Goodbye!\n")
                     break
             except ValueError as e:
                 print(f"\nInvalid choice: {e}\n")

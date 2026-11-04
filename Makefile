@@ -37,8 +37,8 @@ build: install
 	@echo "${GREEN}Mazegen successfully packaged${RESET}"
 
 install-package: build
-	@${PIP} install dist/mazegen-*.whl
-	@echo "${GREEN}Mazegen package successfully installed${RESET}"
+	@${PIP} install mazegen-*.whl
+	@echo "${GREEN}Mazegen package successfully installed at: $$(${PIP} show mazegen | grep Location | cut -d' ' -f2)${RESET}"
 
 run: install
 	@echo "${BLUE}Using Python in ${VENV}: $$(${PYTHON} -c 'import sys; print(sys.prefix)')${RESET}"
