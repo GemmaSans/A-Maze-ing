@@ -438,7 +438,10 @@ class MazeDisplay:
             print("1. Re-generate a new maze")
             print("2. Show / Hide the shortest path")
             print("3. Rotate colours")
-            print("4. Rotate only the 42 colours")
+            if self.generator.coords_42:
+                print("4. Rotate only the 42 colours")
+            else:
+                print("\033[9m4. Rotate only the 42 colours\033[0m")
             print("5. Rotate only the walls colours")
             print("6. Quit")
             str_choice = input("Choice? (1-6): ")
@@ -450,6 +453,8 @@ class MazeDisplay:
                     subprocess.run("cls" if os.name == "nt" else "clear",
                                    shell=True)
                     self.generator.generate_maze(random.randint(1, 9999))
+                    self.solution = self.generator.solution
+                    self.len_solution = len(self.solution)
                     print(self)
                     print("\nYou've chosen 1: generating a new maze\n")
                 elif choice == 2:
