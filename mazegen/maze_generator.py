@@ -8,6 +8,8 @@ import random
 
 PATTERN_MIN_WIDTH: int = 9
 PATTERN_MIN_HEIGHT: int = 7
+MAX_WIDTH: int = 200
+MAX_HEIGHT: int = 200
 
 
 class MazeGenerator():
@@ -34,8 +36,12 @@ class MazeGenerator():
         """
         if width < 1:
             raise ValueError("Width needs to be larger")
+        if width > MAX_WIDTH:
+            raise ValueError(f"Width cannot be larger than {MAX_WIDTH}")
         if height < 1:
             raise ValueError("Height needs to be larger")
+        if height > MAX_HEIGHT:
+            raise ValueError(f"Height cannot be larger than {MAX_HEIGHT}")
 
         self.width = width
         self.height = height
