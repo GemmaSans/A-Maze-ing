@@ -17,7 +17,7 @@ class MazeGenerator():
                  height: int,
                  entry_pos: tuple[int, int],
                  exit_pos: tuple[int, int],
-                 is_perfect: bool | None = True,
+                 is_perfect: bool | None = False,
                  seed: int | None = None) -> None:
         """
         Initialization of the MazeGenerator class.
@@ -65,7 +65,7 @@ class MazeGenerator():
         if not self.coords_42:
             print("[WARNING] Maze is too small to contain the 42 pattern")
 
-    def _build_base_grid(self) -> None:
+    def _build_grid(self) -> None:
         """
         Generates the grid and stores it, while also blocking the 42 pattern
         """
@@ -86,7 +86,7 @@ class MazeGenerator():
         if seed:
             self.seed = seed
         random.seed(self.seed)
-        self._build_base_grid()
+        self._build_grid()
         self._backtracking_algorithm()
         if not self.is_perfect:
             convert_to_imperfect(self.grid)

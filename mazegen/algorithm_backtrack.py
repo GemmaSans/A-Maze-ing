@@ -42,15 +42,15 @@ def backtracking(grid: list[list[Cell]]) -> None:
     Parameters:
         grid (list(list(Cell))): The grid of Cells that comprises the maze
     """
-    visited: list[Cell] = [grid[0][0]]
+    visited_list: list[Cell] = [grid[0][0]]
     grid[0][0].visited = True
-    while visited:
-        current: Cell = visited[-1]
+    while visited_list:
+        current: Cell = visited_list[-1]
         neighbours = _get_neighbours(current, grid)
         if neighbours:
             selected = random.choice(neighbours)
             remove_walls(current, selected)
             selected.visited = True
-            visited.append(selected)
+            visited_list.append(selected)
         else:
-            visited.pop()
+            visited_list.pop()
