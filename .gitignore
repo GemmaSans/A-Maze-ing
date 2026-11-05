@@ -1,7 +1,8 @@
 mazegen/__pycache__
 __pycache__
 .mypy_cache/
+mazegen/.mypy_cache
 maze.txt
 dist/
 mazegen.egg-info
-maze_env
+maze_env/

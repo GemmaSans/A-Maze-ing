@@ -295,7 +295,7 @@ The interactive display module (`display.py`) provides a terminal-based interfac
 ### Roles
 
 - **gsans-co**: maze generation core: data structures, "42" pattern, backtracker, non-perfect conversion, pathfinding; config parser; output file.
-- **lucgomez**: display and interaction; Makefile; MazeGenerator package; LICENSE;README.
+- **lucgomez**: display and interaction; Makefile; MazeGenerator package; LICENSE; README.
 
 ### Planning
 
@@ -327,7 +327,6 @@ The first step on the planning was to agree on the data structures for the MazeG
 - Python typing (`TypedDict`, type hints): https://docs.python.org/3/library/typing.html
 - Python packaging guide: https://packaging.python.org/
 - PEP 8 and PEP 257 (style and docstrings): https://peps.python.org/pep-0008/ and https://peps.python.org/pep-0257/
-- TODO: add anything else you used (MiniLibX documentation, etc.)
 
 ### Use of AI
 

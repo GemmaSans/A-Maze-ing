@@ -9,6 +9,7 @@ description = "A standalone maze generator module"
 authors = [{name = "gsans-co"}, {name = "lucgomez"}]
 requires-python = ">=3.10"
 dependencies = []
+readme = "mazegen/README.md"
 
 [tool.setuptools]
 packages = ["mazegen"]

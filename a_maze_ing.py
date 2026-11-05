@@ -1,6 +1,6 @@
 from mazegen import MazeGenerator
 from display import MazeDisplay, DisplayError
-from config_parser import config_parser, ConfigError
+from parse_config import config_parser, ConfigError
 from output import write_output, OutputError
 import sys
 
